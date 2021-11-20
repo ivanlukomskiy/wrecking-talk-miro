@@ -77,7 +77,6 @@ async function init() {
         function initSpeechRecgnition() {
             runSpeechRecognition(onAnythingSaid, onFinalised, onEndEvent)
         }
-        addCat()
         initSpeechRecgnition()
     });
 }
