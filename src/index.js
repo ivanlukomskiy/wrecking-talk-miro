@@ -1,6 +1,6 @@
 import {PHRASES_PROCESSORS, WORD_PROCESSORS} from "./processors";
 import {runSpeechRecognition} from "./recognition";
-import {saySmooth} from "./commands";
+import {addCat, saySmooth} from "./commands";
 
 const {board} = window.miro;
 
@@ -77,7 +77,6 @@ async function init() {
         function initSpeechRecgnition() {
             runSpeechRecognition(onAnythingSaid, onFinalised, onEndEvent)
         }
-
         initSpeechRecgnition()
     });
 }

@@ -99,14 +99,14 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export async function say(text, timeout = 1500) {
+export async function say(text, timeout = 1500, x=null, y=null) {
     console.log("saying:", text, "for", timeout)
     const vp = await board.viewport.get()
     const popup = await createShape(
         {
             shape_type: "wedge_round_rectangle_callout",
-            x: vp.x + vp.width / 4,
-            y: vp.y + vp.height * 3 / 4,
+            x: x ?? (vp.x + vp.width / 4),
+            y: y ?? (vp.y + vp.height * 3 / 4),
             title: `<strong>${capitalizeFirstLetter(text)}</strong>`,
             color: "#dddddd"
         }
@@ -228,13 +228,18 @@ export async function addCat() {
 
     const cat0 = await createImage(CAT_URLS[0], x, y, w, 0, 'cat0')
     const cat1 = await createImage(CAT_URLS[1], x, y, w, 0, 'cat1')
+    var tick = 1
     while (true) {
         await goCat(cat0, cat1)
         await board.bringToFront(cat0);
         await sleep(30)
         await goCat(cat0, cat1)
         await board.bringToFront(cat1);
+        if (tick % 3 === 0) {
+            say('meaw', 1500, cat0.x + cat0.width / 2, cat0.y - cat0.height)
+        }
         await sleep(30)
+        tick++;
     }
 }
 
