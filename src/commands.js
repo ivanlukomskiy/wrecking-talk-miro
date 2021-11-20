@@ -1,4 +1,5 @@
 import {findByName} from "./selectors";
+import {convert} from "./colorsMap";
 
 const {board} = window.miro;
 const FLOWER_URLS = [
@@ -224,12 +225,25 @@ export async function findByTitle(title) {
     return (await board.get()).find(item => item.title === title)
 }
 
+export async function findAllByTitle(title) {
+    return (await board.get()).filter(item => item.title === title)
+}
+
+export async function removeAll(arr) {
+    await Promise.all(arr.map(async el => await board.remove(el)))
+}
+
 export async function removeCat() {
-    const cats = await Promise.all([findByTitle('cat0'), findByTitle('cat1')]);
-    await Promise.all(cats.map(async cat => await board.remove(cat)))
+    const cats = await Promise.all([...(await findAllByTitle('cat0')), ...(await findAllByTitle('cat1'))]);
+    await removeAll(cats)
 }
 
 export async function removeDecorations() {
-    const decorations = (await board.get()).filter(item => item.title === 'decoration');
-    await Promise.all(decorations.map(async decor => await board.remove(decor)))
+    const decorations = await findAllByTitle('decoration');
+    await removeAll(decorations);
+}
+
+export async function removeColor(color) {
+    const items = (await board.get()).filter(item => item.style && item.style.fillColor === convert(color));
+    await removeAll(items);
 }
