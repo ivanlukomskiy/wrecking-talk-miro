@@ -173,8 +173,7 @@ function chooseFlowerCoords(x, y, width, height) {
     return {x: x1 + x, y: y1 + y, width: width/7, height: width/7}
 }
 
-export async function decorateByName(name) {
-    const item = await findByName(name)
+export const decorateItem = async item => {
     if (!item) {
         return
     }
@@ -184,12 +183,24 @@ export async function decorateByName(name) {
 
     const {x, y, width, height} = item;
     for(let flowerIdx = 0; flowerIdx<FLOWER_URLS.length; flowerIdx++) {
-    for (let i = 0; i <= 7; i++) {
-        const coords = chooseFlowerCoords(x,y,width,height)
-        promises.push(createImage(FLOWER_URLS[flowerIdx], coords['x'], coords['y'], coords['width'], height['height']))
-    }
+        for (let i = 0; i <= 7; i++) {
+            const coords = chooseFlowerCoords(x,y,width,height)
+            promises.push(createImage(FLOWER_URLS[flowerIdx], coords['x'], coords['y'], coords['width'], height['height'], 'decoration'))
+        }
     }
     await Promise.all(promises)
+}
+
+export const decorate = async text => {
+    if (!text) {
+        const items = await board.getSelection();
+        if (items && items.length) {
+            await Promise.all(items.map(decorateItem))
+        }
+    }
+
+    const item = await findByName(text)
+    await decorateItem(item)
 }
 
 const CAT_STEP = 5;
@@ -226,4 +237,9 @@ export async function findByTitle(title) {
 export async function removeCat() {
     const cats = await Promise.all([findByTitle('cat0'), findByTitle('cat1')]);
     await Promise.all(cats.map(async cat => await board.remove(cat)))
+}
+
+export async function removeDecorations() {
+    const decorations = (await board.get()).filter(item => item.title === 'decoration');
+    await Promise.all(decorations.map(async decor => await board.remove(decor)))
 }

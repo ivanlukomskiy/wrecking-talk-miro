@@ -4,12 +4,13 @@ import {
     drawAbstraction,
     say,
     zoomByName,
-    decorateByName,
     saySmooth,
     sleep,
     createText,
     addCat,
-    removeCat
+    removeCat,
+    decorate,
+    removeDecorations
 } from "./commands";
 
 const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
@@ -49,7 +50,7 @@ let rickRollProcessor = regexpProcessor(async (text) => {
 
 async function dickOnSelectedItemProcessor(text) {
     if (text !== null) {
-        if (text.toLowerCase().indexOf("dick") !== -1) {
+        if (text.toLowerCase().startsWith("dick")) {
             const rect = await getSelectedRect()
             let x, y, width, height
             if (rect !== null) {
@@ -128,18 +129,8 @@ const addCatProcessor = regexpProcessor(addCat,
     new RegExp('i hate cats', 'i'),
 );
 const removeCatProcessor = regexpProcessor(removeCat, new RegExp('remove cat', 'i'));
-
-const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
-
-async function decorateByNameProcessor(text) {
-    const nameMatch = text.match(DECORATE_REGEXP)
-    if (!nameMatch) {
-        return
-    }
-
-    const name = nameMatch[1];
-    await decorateByName(name)
-}
+const decorateProcessor = regexpProcessor(decorate, new RegExp('decorate ?(.*)?', 'i'));
+const removeDecorationsProcessor = regexpProcessor(removeDecorations, new RegExp('remove decorations', 'i'));
 
 let poopProcessor = regexpProcessor(async (text) => {
     let poo = await board.createText({
@@ -330,7 +321,6 @@ let linkProcessor = regexpProcessor(async (text) => {
     if (selected.length < 2) {
         return await say("Nothing to link!", 1500)
     }
-    say("Linking...")
 
     async function link(first, second) {
         console.log(first, second)
@@ -472,15 +462,14 @@ let fireProcessor = regexpProcessor(async (text) => {
 let workspaceProcessor = regexpProcessor(getInView, new RegExp("workspace", "i"))
 
 export const WORD_PROCESSORS = [
-    dickOnSelectedItemProcessor,
     poopProcessor
 ]
+
 export const PHRASES_PROCESSORS = [
-    addDickToItemProcessor,
+    dickOnSelectedItemProcessor,
     likeBlockProcessor,
     sayTextProcessor,
     zoomByNameProcessor,
-    decorateByNameProcessor,
     biggerProcessor,
     rickRollProcessor,
     fireProcessor,
@@ -491,7 +480,8 @@ export const PHRASES_PROCESSORS = [
     removeCatProcessor,
     alignProcessor,
     paintBlockProcessor,
-    addCatProcessor,
     workspaceProcessor,
+    decorateProcessor,
     zoomOutProcessor,
+    removeDecorationsProcessor,
 ]
