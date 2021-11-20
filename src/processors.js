@@ -317,18 +317,39 @@ let linkProcessor = regexpProcessor(async (text) => {
 
     async function link(first, second) {
         console.log(first, second)
-        let c1 = first.x + first.width / 2
-        let c2 = second.x - second.width / 2
-        let y1 = first.y
-        let y2 = second.y
-        let c = c2 - c1
+        let x1, x2, y1 ,y2
+        let a1 = -first.x + second.x + second.y
+        let a2 = first.x + second.y - second.x
+        if (first.y <= a1 && first.y >= a2) {
+            y1 = first.y
+            y2 = second.y
+            x1 = first.x + first.width / 2
+            x2 = second.x - second.width / 2
+        } else if (first.y <= a1 && first.y <= a2) {
+            x1 = first.x
+            x2 = second.x
+            y1 = first.y + first.height / 2
+            y2 = second.y - second.height / 2
+        } else if (first.y >= a1 && first.y <= a2 ) {
+            y1 = first.y
+            y2 = second.y
+            x1 = first.x - first.width / 2
+            x2 = second.x + second.width / 2
+        } else if (first.y >= a1 && first.y >= a2) {
+            x1 = first.x
+            x2 = second.x
+            y1 = first.y - first.height / 2
+            y2 = second.y + second.height / 2
+        }
+
+        let c = x2 - x1
         let Y = y2 - y1
         let angle = Math.atan(Y / c) * 180 / Math.PI
         let width = Math.sqrt(Y * Y + c * c)
-        console.log(c1, c2, y1, y2, c, Y, angle, width)
+        console.log(x1, x2, y1, y2, c, Y, angle, width)
         await board.createShape({
             shape: "right_arrow",
-            x: c1 + c / 2,
+            x: x1 + c / 2,
             y: y1 + Y / 2,
             width: width,
             height: 10,
