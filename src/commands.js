@@ -7,9 +7,8 @@ const FLOWER_URLS = [
     'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/flower3.png?raw=true',
 ]
 const CAT_URLS = [
-    'https://raw.githubusercontent.com/ivanlukomskiy/wrecking-talk-miro/main/src/assets/cat1.png',
-    'https://raw.githubusercontent.com/ivanlukomskiy/wrecking-talk-miro/main/src/assets/cat2.png',
-    'https://raw.githubusercontent.com/ivanlukomskiy/wrecking-talk-miro/main/src/assets/cat3.png',
+    'https://raw.githubusercontent.com/ivanlukomskiy/wrecking-talk-miro/main/src/assets/cat1.png?raw=true',
+    'https://raw.githubusercontent.com/ivanlukomskiy/wrecking-talk-miro/main/src/assets/cat3.png?raw=true',
 ]
 
 export async function createShape({shape_type, title = "", x = 0, y = 0, width = 100, height = 100, color = "f000000"}) {
@@ -199,9 +198,22 @@ export async function addCat() {
     const y = vp.y + vp.height * 3 / 4;
 
     const w = 166;
-    const h = 132;
 
-    await createImage(CAT_URLS[0], x, y, w, 0, 'cat0')
-    await createImage(CAT_URLS[1], x, y, w, 0, 'cat1')
-    await createImage(CAT_URLS[2], x, y, w, 0, 'cat2')
+    const cat0 = await createImage(CAT_URLS[0], x, y, w, 0, 'cat0')
+    const cat1 = await createImage(CAT_URLS[1], x, y, w, 0, 'cat1')
+    while (true) {
+        await board.bringToFront(cat0);
+        await sleep(50)
+        await board.bringToFront(cat1);
+        await sleep(50)
+    }
+}
+
+export async function findByTitle(title) {
+    return (await board.get()).find(item => item.title === title)
+}
+
+export async function removeCat() {
+    const cats = await Promise.all([findByTitle('cat0'), findByTitle('cat1')]);
+    await Promise.all(cats.map(async cat => await board.remove(cat)))
 }
