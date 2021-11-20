@@ -1,6 +1,11 @@
 import {findByName} from "./selectors";
 
 const {board} = window.miro;
+const FLOWER_URLS = [
+    'https://i.ibb.co/74kxtY8/flower1.png',
+    'https://i.ibb.co/FDqdb8b/flower2.png',
+    'https://i.ibb.co/tMhggpj/flower3.png',
+]
 
 export function createShape({shape_type, title = "", x = 0, y = 0, width = 100, height = 100, color = "f000000"}) {
     return {
@@ -101,6 +106,20 @@ export async function zoomByName(name) {
 
 }
 
+function chooseFlowerCoords(x, y, width, height) {
+    let xmin = width / 2.4
+    let ymin = height / 2.4
+    let x1, y1
+    while(true) {
+        x1 = (Math.random()-0.5) * width
+        y1 = (Math.random()-0.5) * height
+        if ((x1 < -xmin || x1 > xmin) || (y1 < -ymin || y1 > ymin)) {
+            break;
+        }
+    }
+    return {x: x1 + x, y: y1 + y, width: width/8, height: width/8}
+}
+
 export async function decorateByName(name) {
     const item = await findByName(name)
     if (!item) {
@@ -108,23 +127,14 @@ export async function decorateByName(name) {
     }
 
     await item.sync();
+    const promises = []
 
     const { x, y, width, height } = item;
-    for (let i = 0; i <= 10; i++) {
-        const q1 = Math.floor(Math.random() * width)
-        const q2 = Math.floor(Math.random() * height)
-        await createText('🌸', x - (width / 2) + q1 + 50, y - (height / 2) + q2, 720)
+    for(let flowerIdx = 0; flowerIdx<FLOWER_URLS.length; flowerIdx++) {
+    for (let i = 0; i <= 7; i++) {
+        const coords = chooseFlowerCoords(x,y,width,height)
+        promises.push(createImage(FLOWER_URLS[flowerIdx], coords['x'], coords['y'], coords['width'], height['height']))
     }
-
-    for (let i = 0; i <= 10; i++) {
-        const q1 = Math.floor(Math.random() * width)
-        const q2 = Math.floor(Math.random() * height)
-        await createText('🌺', x - (width / 2) + q1 + 50, y - (height / 2) + q2, 720)
     }
-
-    for (let i = 0; i <= 10; i++) {
-        const q1 = Math.floor(Math.random() * width)
-        const q2 = Math.floor(Math.random() * height)
-        await createText('🌼', x - (width / 2) + q1 + 50, y - (height / 2) + q2, 720)
-    }
+    await Promise.all(promises)
 }

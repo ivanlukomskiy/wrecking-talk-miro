@@ -1,7 +1,7 @@
 const {board} = window.miro;
 
 export async function findByName(name) {
-    name = name.toLowerCase()
+    name = name.toLowerCase().replace('\.', '')
     console.log("looking for", name)
     let item = (await board.get()).filter(value => {
         if(!value.content) {
