@@ -1,4 +1,4 @@
-import {findByName} from "./selectors";
+import {findByCoords, findByName} from "./selectors";
 import {convert} from "./colorsMap";
 
 const {board} = window.miro;
@@ -12,7 +12,14 @@ const CAT_URLS = [
     'https://raw.githubusercontent.com/ivanlukomskiy/wrecking-talk-miro/main/src/assets/cat3.png?raw=true',
 ]
 
-export async function createShape({shape_type, title = "", x = 0, y = 0, width = 100, height = 100, color = "f000000"}) {
+export async function createShape({shape_type, title = "", x = 0, y = 0, width = 100, height = 100, color = "transparent", strictSpace = true}) {
+    if (!strictSpace) {
+        let item = await findByCoords(x ,y)
+        while (item !== undefined) {
+            x = item.x + item.width / 2 + 100
+            item = await findByCoords(x, y)
+        }
+    }
     return await board.createShape({
         "content": title,
         "shape": shape_type,
