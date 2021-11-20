@@ -11,9 +11,9 @@ import {
     removeCat,
     decorate,
     removeDecorations,
-    removeColor
+    removeColor, createShape
 } from "./commands";
-import { convert } from './colorsMap';
+import {convert} from './colorsMap';
 
 const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
 const ELIMINATED_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/eliminated.png?raw=true'
@@ -145,10 +145,12 @@ let poopProcessor = regexpProcessor(async (text) => {
 
 let createBlockProcessor = regexpProcessor(async (text) => {
     say(`Creating ${text}...`)
-    await board.createShape({
-        shape: "rectangle",
+    await createShape({
+        shape_type: "round_rectangle",
         ...await getViewCenter(),
-        content: text
+        title: text,
+        strictSpace: false,
+        color: "#dddddd"
     })
 }, new RegExp("create (.*)", "i"))
 
@@ -174,7 +176,7 @@ let linkProcessor = regexpProcessor(async (text) => {
 
     async function link(first, second) {
         console.log(first, second)
-        let x1, x2, y1 ,y2
+        let x1, x2, y1, y2
         let a1 = -first.x + second.x + second.y
         let a2 = first.x + second.y - second.x
         let arrow = "right_arrow"
@@ -188,7 +190,7 @@ let linkProcessor = regexpProcessor(async (text) => {
             x2 = second.x
             y1 = first.y + first.height / 2
             y2 = second.y - second.height / 2
-        } else if (first.y >= a1 && first.y <= a2 ) {
+        } else if (first.y >= a1 && first.y <= a2) {
             y1 = first.y
             y2 = second.y
             x1 = first.x - first.width / 2
@@ -269,7 +271,7 @@ let alignProcessor = regexpProcessor(async (text) => {
     }
 }, new RegExp("align", "i"))
 
-let zoomOutProcessor = regexpProcessor(async(text) => {
+let zoomOutProcessor = regexpProcessor(async (text) => {
     const objects = await board.get()
     if (objects.length === 0) {
         return;
@@ -299,7 +301,7 @@ let zoomOutProcessor = regexpProcessor(async(text) => {
 let fireProcessor = regexpProcessor(async (text) => {
     let {x, y, width, height} = await board.viewport.get()
     x = x + width / 2
-    y = y + height /2
+    y = y + height / 2
     console.log('x, y, width, height', x, y, width, height)
     let promises = [0, 15, 30, 50].map((rotation) => {
         return createImage(FIRES_PIC, x + rotation, y, width, rotation)
