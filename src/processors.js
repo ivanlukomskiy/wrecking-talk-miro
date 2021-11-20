@@ -1,5 +1,6 @@
 import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter} from "./selectors";
-import {createImage, drawAbstraction, say, zoomByName, decorateByName, saySmooth} from "./commands";
+import {createImage, drawAbstraction, say, zoomByName, decorateByName, saySmooth, sleep} from "./commands";
+const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
 
 const {board} = miro;
 
@@ -127,6 +128,34 @@ let poopProcessor = regexpProcessor(async (text) => {
 }, new RegExp("(poo)|(poop)|(shit)", "i"))
 
 
+let fireProcessor = regexpProcessor(async (text) => {
+    const {x, y, width, height} = await getViewCenter()
+    let promises = [0, 15, 30, 50].map((rotation) => {
+        return createImage(FIRES_PIC, x + rotation, y, width, rotation)
+    })
+    const images = await Promise.all(promises)
+    let i = 0;
+    while(i < 50) {
+        for (let image of images) {
+            image.rotation = Math.random()*180;
+            image.x = Math.random()*100 - 50 + x;
+            image.y = Math.random()*100 - 50 + y;
+            await image.sync();
+        }
+        i++;
+    }
+    let items = await board.get()
+    promises = []
+    for (let item of items) {
+        promises.push(board.remove(item))
+    }
+    for (let image of images) {
+        promises.push(board.remove(image))
+    }
+    await Promise.all(promises)
+}, new RegExp("destroy everything", 'i'))
+
+
 export const WORD_PROCESSORS = [
     dickOnSelectedItemProcessor,
     poopProcessor
@@ -138,5 +167,6 @@ export const PHRASES_PROCESSORS = [
     zoomByNameProcessor,
     decorateByNameProcessor,
     biggerProcessor,
-    rickRollProcessor
+    rickRollProcessor,
+    fireProcessor
 ]

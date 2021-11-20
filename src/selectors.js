@@ -57,6 +57,8 @@ export async function getViewCenter() {
     let vp = await board.viewport.get()
     return {
         x: vp.x + vp.width / 2 - 150,
-        y: vp.y + vp.height / 2
+        y: vp.y + vp.height / 2,
+        width: vp.width,
+        height: vp.height,
     }
 }

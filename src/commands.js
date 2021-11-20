@@ -21,17 +21,17 @@ export async function createShape({shape_type, title = "", x = 0, y = 0, width =
     })
 }
 
-export async function createImage(url, x, y, width) {
+export async function createImage(url, x, y, width, rotation=0.0) {
     const params = {
         title: 'This is an image',
         url,
         x,
         y,
         width,
-        rotation: 0.0
+        rotation: rotation
     }
     console.log('params', params)
-    await miro.board.createImage(params)
+    return await miro.board.createImage(params)
 }
 
 export async function createText(content, x, y, width) {
@@ -98,7 +98,7 @@ export async function say(text, timeout = 1500) {
     }, timeout)
 }
 
-function sleep(ms) {
+export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
