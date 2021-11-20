@@ -7,8 +7,8 @@ const FLOWER_URLS = [
     'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/flower3.png?raw=true',
 ]
 
-export function createShape({shape_type, title = "", x = 0, y = 0, width = 100, height = 100, color = "f000000"}) {
-    return {
+export async function createShape({shape_type, title = "", x = 0, y = 0, width = 100, height = 100, color = "f000000"}) {
+    return await board.createShape({
         "content": title,
         "shape": shape_type,
         "style": {
@@ -18,8 +18,7 @@ export function createShape({shape_type, title = "", x = 0, y = 0, width = 100, 
         "y": y,
         "width": width,
         "height": height
-
-    }
+    })
 }
 
 export async function createImage(url, x, y, width) {
@@ -29,7 +28,8 @@ export async function createImage(url, x, y, width) {
         x,
         y,
         width,
-        rotation: 0.0 }
+        rotation: 0.0
+    }
     console.log('params', params)
     await miro.board.createImage(params)
 }
@@ -46,35 +46,35 @@ export async function createText(content, x, y, width) {
 
 export async function drawAbstraction(x = 0, y = 0, length = 300, color = "#000000") {
     await Promise.all([
-        board.createShape(createShape({
+        createShape({
             shape_type: "circle",
             title: "head",
             x: x + length,
             y: y + 50,
             color: color
-        })),
-        board.createShape(createShape({
+        }),
+        createShape({
             shape_type: "rectangle",
             title: "dick",
             x: x + length / 2,
             y: y + 50,
             width: length,
             color: color
-        })),
-        board.createShape(createShape({
+        }),
+        createShape({
             shape_type: "circle",
             title: "nut1",
             x,
             y,
             color: color
-        })),
-        board.createShape(createShape({
+        }),
+        createShape({
             shape_type: "circle",
             title: "nut2",
             x,
             y: y + 100,
             color: color
-        })),])
+        }),])
 }
 
 function capitalizeFirstLetter(string) {
@@ -84,7 +84,7 @@ function capitalizeFirstLetter(string) {
 export async function say(text, timeout = 1500) {
     console.log("saying:", text, "for", timeout)
     const vp = await board.viewport.get()
-    const popup = await board.createShape(createShape(
+    const popup = await createShape(
         {
             shape_type: "wedge_round_rectangle_callout",
             x: vp.x + vp.width / 4,
@@ -92,10 +92,53 @@ export async function say(text, timeout = 1500) {
             title: `<strong>${capitalizeFirstLetter(text)}</strong>`,
             color: "#bbbbbb"
         }
-    ))
+    )
     setTimeout(() => {
         board.remove(popup)
     }, timeout)
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export async function saySmooth(text, timeout = 2000, pause = 1,) {
+    const vp = await board.viewport.get()
+    text = capitalizeFirstLetter(text).split(" ")
+    const popup = await createShape(
+        {
+            shape_type: "wedge_round_rectangle_callout",
+            x: vp.x + vp.width / 4,
+            y: vp.y + vp.height * 3 / 4,
+            title: "",
+            color: "#bbbbbb"
+        }
+    )
+
+    async function smooth(pos) {
+
+        if (pos < text.length) {
+            popup.content = `<strong>${text.slice(0, pos + 1).join(" ")}</strong>`
+            await popup.sync()
+            setTimeout(async () => {
+                await smooth(pos + 1)
+            }, pause)
+        } else {
+            await sleep(timeout)
+            await board.remove(popup)
+        }
+    }
+
+    await smooth(0)
+    // for (let i =0; i < text.length; i++) {
+    //     setTimeout(() => {
+    //         popup.content = `<strong>${text.substr(0, i)}</strong>`
+    //         popup.sync()
+    //     }, pause * i)
+    // }
+    // setTimeout(() => {
+    //     board.remove(popup)
+    // }, timeout + pause * text.length)
 }
 
 export async function zoomByName(name) {
@@ -129,7 +172,7 @@ export async function decorateByName(name) {
     await item.sync();
     const promises = []
 
-    const { x, y, width, height } = item;
+    const {x, y, width, height} = item;
     for(let flowerIdx = 0; flowerIdx<FLOWER_URLS.length; flowerIdx++) {
     for (let i = 0; i <= 7; i++) {
         const coords = chooseFlowerCoords(x,y,width,height)
