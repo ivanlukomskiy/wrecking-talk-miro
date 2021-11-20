@@ -4,12 +4,12 @@ import {
     drawAbstraction,
     say,
     zoomByName,
-    decorateByName,
     saySmooth,
     sleep,
     createText,
     addCat,
-    removeCat
+    removeCat,
+    decorate
 } from "./commands";
 
 const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
@@ -123,18 +123,7 @@ const sayTextProcessor = regexpProcessor(saySmooth, new RegExp('say (.*)', 'i'))
 const zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
 const addCatProcessor = regexpProcessor(addCat, new RegExp('insert cat', 'i'), new RegExp('spawn cat', 'i'));
 const removeCatProcessor = regexpProcessor(removeCat, new RegExp('remove cat', 'i'));
-
-const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
-
-async function decorateByNameProcessor(text) {
-    const nameMatch = text.match(DECORATE_REGEXP)
-    if (!nameMatch) {
-        return
-    }
-
-    const name = nameMatch[1];
-    await decorateByName(name)
-}
+const decorateProcessor = regexpProcessor(decorate, new RegExp('decorate ?(.*)?', 'i'));
 
 let poopProcessor = regexpProcessor(async (text) => {
     let poo = await board.createText({
@@ -325,7 +314,6 @@ let linkProcessor = regexpProcessor(async (text) => {
     if (selected.length < 2) {
         return await say("Nothing to link!", 1500)
     }
-    say("Linking...")
 
     async function link(first, second) {
         console.log(first, second)
@@ -470,12 +458,12 @@ export const WORD_PROCESSORS = [
     dickOnSelectedItemProcessor,
     poopProcessor
 ]
+
 export const PHRASES_PROCESSORS = [
     addDickToItemProcessor,
     likeBlockProcessor,
     sayTextProcessor,
     zoomByNameProcessor,
-    decorateByNameProcessor,
     biggerProcessor,
     rickRollProcessor,
     fireProcessor,
@@ -486,7 +474,7 @@ export const PHRASES_PROCESSORS = [
     removeCatProcessor,
     alignProcessor,
     paintBlockProcessor,
-    addCatProcessor,
     workspaceProcessor,
+    decorateProcessor,
     zoomOutProcessor,
 ]
