@@ -1,4 +1,4 @@
-import {getViewCenter} from "./selectors";
+import {findByName} from "./selectors";
 
 const {board} = window.miro;
 
@@ -80,4 +80,12 @@ export async function say(text, timeout = 1500) {
     setTimeout(() => {
         board.remove(popup)
     }, timeout)
+}
+
+export async function zoomByName(name) {
+    let item = await findByName(name)
+    if (item !== null) {
+        await board.viewport.zoomTo(item)
+    }
+
 }
