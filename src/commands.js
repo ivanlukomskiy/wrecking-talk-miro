@@ -39,14 +39,20 @@ export async function createImage(url, x, y, width, rotation=0.0, title = 'This 
     return await miro.board.createImage(params)
 }
 
-export async function createText(content, x, y, width) {
-    await miro.board.createText({
+export async function createText(content, x, y, width, color=null) {
+    const props = {
         content,
         x,
         y,
         width,
         rotation: 0.0,
-    })
+    }
+    if(color) {
+        props['style'] = {
+            fillColor: color
+        }
+    }
+    return await miro.board.createText(props)
 }
 
 export async function drawAbstraction(x = 0, y = 0, length = 300, color = "#000000") {
