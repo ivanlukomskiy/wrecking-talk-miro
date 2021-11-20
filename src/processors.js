@@ -1,7 +1,19 @@
 import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter} from "./selectors";
-import {createImage, drawAbstraction, say, zoomByName, decorateByName, saySmooth, sleep} from "./commands";
+import {
+    createImage,
+    drawAbstraction,
+    say,
+    zoomByName,
+    decorateByName,
+    saySmooth,
+    sleep,
+    createText,
+    addCat
+} from "./commands";
 
 const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
+const ELIMINATED_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/eliminated.png?raw=true'
+const BOOM_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/boom.png?raw=true'
 
 const {board} = miro;
 
@@ -106,8 +118,9 @@ async function likeBlockProcessor(text) {
     return true
 }
 
-let sayTextProcessor = regexpProcessor(saySmooth, new RegExp('say (.*)', 'i'))
-let zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
+const sayTextProcessor = regexpProcessor(saySmooth, new RegExp('say (.*)', 'i'))
+const zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
+const addCatProcessor = regexpProcessor(addCat, new RegExp('insert cat', 'i'));
 
 const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
 
@@ -372,25 +385,30 @@ let fireProcessor = regexpProcessor(async (text) => {
         return createImage(FIRES_PIC, x + rotation, y, width, rotation)
     })
     const images = await Promise.all(promises)
+    const boom = await createImage(BOOM_PIC, x, y, width / 2)
     let i = 0;
-    while (i < 50) {
+    while (i < 7) {
         for (let image of images) {
             image.rotation = Math.random() * 180;
             image.x = Math.random() * 100 - 50 + x;
             image.y = Math.random() * 100 - 50 + y;
             await image.sync();
         }
+        boom.rotation = Math.random() * 50 - 24;
+        await boom.sync()
+        await sleep(1)
         i++;
     }
     let items = await board.get()
     promises = []
     for (let item of items) {
-        promises.push(board.remove(item))
-    }
-    for (let image of images) {
-        promises.push(board.remove(image))
+        promises.push(board.remove(item).catch(() => {
+        }))
     }
     await Promise.all(promises)
+    let eliminated = await createImage(ELIMINATED_PIC, x, y, width / 2)
+    await sleep(3000)
+    await board.remove(eliminated)
 }, new RegExp("destroy everything", 'i'))
 
 
@@ -411,5 +429,6 @@ export const PHRASES_PROCESSORS = [
     createBlockProcessor,
     linkProcessor,
     eraseAbstractionProcessor,
-    alignProcessor
+    alignProcessor,
+    addCatProcessor
 ]

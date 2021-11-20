@@ -6,6 +6,11 @@ const FLOWER_URLS = [
     'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/flower2.png?raw=true',
     'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/flower3.png?raw=true',
 ]
+const CAT_URLS = [
+    'https://raw.githubusercontent.com/ivanlukomskiy/wrecking-talk-miro/main/src/assets/cat1.png',
+    'https://raw.githubusercontent.com/ivanlukomskiy/wrecking-talk-miro/main/src/assets/cat2.png',
+    'https://raw.githubusercontent.com/ivanlukomskiy/wrecking-talk-miro/main/src/assets/cat3.png',
+]
 
 export async function createShape({shape_type, title = "", x = 0, y = 0, width = 100, height = 100, color = "f000000"}) {
     return await board.createShape({
@@ -21,27 +26,33 @@ export async function createShape({shape_type, title = "", x = 0, y = 0, width =
     })
 }
 
-export async function createImage(url, x, y, width, rotation=0.0) {
+export async function createImage(url, x, y, width, rotation=0.0, title = 'This is an image') {
     const params = {
-        title: 'This is an image',
+        title,
         url,
         x,
         y,
         width,
-        rotation: rotation
+        rotation
     }
     console.log('params', params)
     return await miro.board.createImage(params)
 }
 
-export async function createText(content, x, y, width) {
-    await miro.board.createText({
+export async function createText(content, x, y, width, color=null) {
+    const props = {
         content,
         x,
         y,
         width,
         rotation: 0.0,
-    })
+    }
+    if(color) {
+        props['style'] = {
+            fillColor: color
+        }
+    }
+    return await miro.board.createText(props)
 }
 
 export async function drawAbstraction(x = 0, y = 0, length = 300, color = "#000000") {
@@ -182,13 +193,15 @@ export async function decorateByName(name) {
     await Promise.all(promises)
 }
 
-export async function addKittyTo(name) {
-    const item = await findByName(name)
-    if (!item) {
-        return
-    }
+export async function addCat() {
+    const vp = await board.viewport.get();
+    const x = vp.x + vp.width / 4;
+    const y = vp.y + vp.height * 3 / 4;
 
-    await item.sync();
+    const w = 166;
+    const h = 132;
 
-    const { x, y } = item;
+    await createImage(CAT_URLS[0], x, y, w, 0, 'cat0')
+    await createImage(CAT_URLS[1], x, y, w, 0, 'cat1')
+    await createImage(CAT_URLS[2], x, y, w, 0, 'cat2')
 }
