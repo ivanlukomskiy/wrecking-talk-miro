@@ -1,5 +1,5 @@
 import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter} from "./selectors";
-import {createImage, drawAbstraction, say, zoomByName, decorateByName, saySmooth, sleep, createText} from "./commands";
+import {createImage, drawAbstraction, say, zoomByName, decorateByName, saySmooth, sleep, createText, addCat} from "./commands";
 const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
 const ELIMINATED_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/eliminated.png?raw=true'
 
@@ -106,8 +106,9 @@ async function likeBlockProcessor(text) {
     return true
 }
 
-let sayTextProcessor = regexpProcessor(saySmooth, new RegExp('say (.*)', 'i'))
-let zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
+const sayTextProcessor = regexpProcessor(saySmooth, new RegExp('say (.*)', 'i'))
+const zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
+const addCatProcessor = regexpProcessor(addCat, new RegExp('insert cat', 'i'));
 
 const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
 
@@ -228,5 +229,6 @@ export const PHRASES_PROCESSORS = [
     rickRollProcessor,
     createBlockProcessor,
     linkProcessor,
-    eraseAbstractionProcessor
+    eraseAbstractionProcessor,
+    addCatProcessor
 ]
