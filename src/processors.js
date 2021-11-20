@@ -420,14 +420,14 @@ let zoomOutProcessor = regexpProcessor(async(text) => {
     await board.viewport.set({
         viewport: vp,
         padding: {
-            top: (top - bottom) * 0.15,
-            left: (right - left) * 0.15,
-            bottom: (top - bottom) * 0.15,
-            right: (right - left) * 0.15,
+            top: (top - bottom) * 0.05,
+            left: (right - left) * 0.05,
+            bottom: (top - bottom) * 0.05,
+            right: (right - left) * 0.05,
         },
         animationDurationInMs: 300,
     })
-}, new RegExp('show everything', 'i'))
+}, new RegExp('show everything', 'i'), new RegExp("zoom out", "i"))
 
 let fireProcessor = regexpProcessor(async (text) => {
     const {x, y, width, height} = await board.viewport
