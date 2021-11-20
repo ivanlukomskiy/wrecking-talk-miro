@@ -1,3 +1,5 @@
+import {getViewCenter} from "./selectors";
+
 const {board} = window.miro;
 
 export function createShape({shape_type, title = "", x = 0, y = 0, width = 100, height = 100, color = "f000000"}) {
@@ -46,4 +48,25 @@ export async function drawAbstraction(x = 0, y = 0, length = 300, color = "#0000
             y: y + 100,
             color: color
         })),])
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export async function say(text, timeout = 1500) {
+    console.log("saying:", text, "for", timeout)
+    const vp = await board.viewport.get()
+    const popup = await board.createShape(createShape(
+        {
+            shape_type: "wedge_round_rectangle_callout",
+            x: vp.x + vp.width / 4,
+            y: vp.y + vp.height * 3 / 4,
+            title: `<strong>${capitalizeFirstLetter(text)}</strong>`,
+            color: "#bbbbbb"
+        }
+    ))
+    setTimeout(() => {
+        board.remove(popup)
+    }, timeout)
 }

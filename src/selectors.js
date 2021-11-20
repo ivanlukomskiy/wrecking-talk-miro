@@ -10,13 +10,18 @@ export async function findByName(name) {
     }
     return item[0]
 }
+
 export async function getSelectedRect() {
     let x = Infinity
     let y = Infinity
-    let right= -Infinity
+    let right = -Infinity
     let bottom = -Infinity
     // console.log(await board.getSelection())
-    for (const item of await board.getSelection()) {
+    let selection = await board.getSelection();
+    if (selection.length === 0) {
+        return null
+    }
+    for (const item of selection) {
         // console.log(item, item.x ,item.y, item.width, item.height)
         x = Math.min(x, item.x - item.width / 2)
         y = Math.min(y, item.y - item.height / 2)
@@ -38,6 +43,8 @@ export async function getSelectedRect() {
 
 export async function getViewCenter() {
     let vp = await board.viewport.get()
-    return {x: vp.x + vp.width / 2 - 150,
-        y: vp.y + vp.height / 2}
+    return {
+        x: vp.x + vp.width / 2 - 150,
+        y: vp.y + vp.height / 2
+    }
 }
