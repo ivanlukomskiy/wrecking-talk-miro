@@ -1,6 +1,9 @@
 const {board} = window.miro;
 import {drawAbstraction} from "./commands.js"
 
+let textCache = new Set();
+let lastText = undefined;
+
 function runSpeechRecognition(onAnythingSaid, onFinalised, onEndEvent) {
     var language = 'en-US';
     if (!('webkitSpeechRecognition' in window)) {
@@ -37,13 +40,53 @@ function runSpeechRecognition(onAnythingSaid, onFinalised, onEndEvent) {
     recognition.start();
 }
 
+function commonPrefix(words1, words2) {
+    for (let i = 0; i < Math.min(words1.length, words2.length); i++) {
+        if (words1[i] !== words2[i]) {
+            return words1.slice(0, i)
+        }
+    }
+    return words1.slice(0, Math.min(words1.length, words2.length))
+}
 
+function cutCommonPrefix(str1, strToCut) {
+    let words = strToCut.split(" ")
+    return words.slice(commonPrefix(str1.split(" "), words).length, words.length).join(" ")
+}
+
+function getNewPart(text) {
+    if (!textCache.has(text)) {
+        // console.log(`Old text: ${textCache}`)
+        // console.log(`New text: ${text}`)
+        let newPart
+        if (lastText === undefined) {
+            newPart = text
+        } else {
+            newPart = cutCommonPrefix(lastText, text)
+        }
+        textCache.add(text);
+        lastText = text;
+        return newPart
+    }
+    return null
+}
 async function init() {
     await board.ui.on("icon:click", async () => {
         let y = 0
 
         function onAnythingSaid(text) {
             // console.log("Said: ", text)
+            let newPart = getNewPart(text)
+            if (newPart !== null){
+                if (newPart.toLowerCase().indexOf("dick") !== -1) {
+                    board.viewport.get().then(vp => {
+                        drawAbstraction(
+                            vp.x + vp.width / 2 - 150,
+                            vp.y + vp.height / 2
+                        )
+                    })
+                }
+            }
 
         }
 
@@ -59,15 +102,10 @@ async function init() {
 
         function onFinalised(text) {
             console.log("Finalized: ", text)
+            textCache = new Set()
+            lastText = undefined
             drawShit(text)
-            if (text.toLowerCase().indexOf("dick") !== -1) {
-                board.viewport.get().then(vp => {
-                    drawAbstraction(
-                        vp.x + vp.width / 2 - 150,
-                        vp.y + vp.height / 2
-                    )
-                })
-            }
+
         }
 
         function onEndEvent() {
