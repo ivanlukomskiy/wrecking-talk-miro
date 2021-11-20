@@ -5,6 +5,7 @@ export async function findByName(name) {
     console.log("looking for", name)
     let item = (await board.get()).filter(value => {
         if(!value.content) {
+            console.log('Item without content', value)
             return false;
         }
         console.log(value.content.toLowerCase().indexOf(name) !== -1, value)

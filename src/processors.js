@@ -4,11 +4,6 @@ import {createImage, drawAbstraction, say, zoomByName} from "./commands";
 async function dickOnSelectedItemProcessor(text) {
     if (text !== null) {
         if (text.toLowerCase().indexOf("dick") !== -1) {
-            // getViewCenter().then((x, y) => {
-            //     drawAbstraction(
-            //         x ,y
-            //     )
-            // })
             const rect = await getSelectedRect()
             let x, y, width, height
             if (rect !== null) {
@@ -51,7 +46,7 @@ async function likeBlockProcessor(text) {
         if (target) {
             console.log('found target', target)
             let {x, y, width, height} = target
-            await createImage('https://icon2.cleanpng.com/20171220/oeq/smiley-png-5a3a2721b28479.1204919515137605457312.jpg',
+            await createImage('https://i.ibb.co/GPC8SQB/like.png',
                 x + width / 2, y + height / 2, width / 7)
             await changeColor(target, '#F590F7')
             return true
