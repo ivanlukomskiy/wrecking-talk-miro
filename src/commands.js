@@ -160,8 +160,8 @@ export async function zoomByName(name) {
 }
 
 function chooseFlowerCoords(x, y, width, height) {
-    let xmin = width / 2.4
-    let ymin = height / 2.4
+    let xmin = width / 2.6
+    let ymin = height / 2.6
     let x1, y1
     while(true) {
         x1 = (Math.random()-0.5) * width
@@ -170,7 +170,7 @@ function chooseFlowerCoords(x, y, width, height) {
             break;
         }
     }
-    return {x: x1 + x, y: y1 + y, width: width/8, height: width/8}
+    return {x: x1 + x, y: y1 + y, width: width/7, height: width/7}
 }
 
 export async function decorateByName(name) {
@@ -192,6 +192,14 @@ export async function decorateByName(name) {
     await Promise.all(promises)
 }
 
+const CAT_STEP = 5;
+async function goCat(cat0, cat1) {
+    cat0.x += CAT_STEP
+    cat1.x += CAT_STEP
+    await cat0.sync()
+    await cat1.sync()
+}
+
 export async function addCat() {
     const vp = await board.viewport.get();
     const x = vp.x + vp.width / 4;
@@ -202,10 +210,12 @@ export async function addCat() {
     const cat0 = await createImage(CAT_URLS[0], x, y, w, 0, 'cat0')
     const cat1 = await createImage(CAT_URLS[1], x, y, w, 0, 'cat1')
     while (true) {
+        await goCat(cat0, cat1)
         await board.bringToFront(cat0);
-        await sleep(50)
+        await sleep(30)
+        await goCat(cat0, cat1)
         await board.bringToFront(cat1);
-        await sleep(50)
+        await sleep(30)
     }
 }
 

@@ -121,7 +121,12 @@ async function likeBlockProcessor(text) {
 
 const sayTextProcessor = regexpProcessor(saySmooth, new RegExp('say (.*)', 'i'))
 const zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
-const addCatProcessor = regexpProcessor(addCat, new RegExp('insert cat', 'i'), new RegExp('spawn cat', 'i'));
+const addCatProcessor = regexpProcessor(addCat,
+    new RegExp('insert cat', 'i'),
+    new RegExp('spawn cat', 'i'),
+    new RegExp('call kitten', 'i'),
+    new RegExp('i hate cats', 'i'),
+);
 const removeCatProcessor = regexpProcessor(removeCat, new RegExp('remove cat', 'i'));
 
 const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
