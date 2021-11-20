@@ -1,4 +1,5 @@
-const { board } = window.miro;
+const {board} = window.miro;
+import {drawAbstraction} from "./commands.js"
 
 function runSpeechRecognition(onAnythingSaid, onFinalised, onEndEvent) {
     var language = 'en-US';
@@ -15,7 +16,7 @@ function runSpeechRecognition(onAnythingSaid, onFinalised, onEndEvent) {
         var interimTranscript = ''; // concatenate all the transcribed pieces together (SpeechRecognitionResult)
 
         for (var i = event.resultIndex; i < event.results.length; i += 1) {
-            if(event.results[i].length === 0) {
+            if (event.results[i].length === 0) {
                 continue;
             }
             var transcriptionPiece = event.results[i][0].transcript; // check for a finalised transciption in the cloud
@@ -36,33 +37,49 @@ function runSpeechRecognition(onAnythingSaid, onFinalised, onEndEvent) {
     recognition.start();
 }
 
+
 async function init() {
-  await board.ui.on("icon:click", async () => {
-      let y = 0
-      function onAnythingSaid(text) {
-          // console.log("Said: ", text)
-      }
-      async function drawShit(text) {
-          await board.createText({
-              content: text,
-              width: 720,
-              x: 0,
-              y
-          })
-          y += 15
-      }
-      function onFinalised(text) {
-          console.log("Finalized: ", text)
-          drawShit(text)
-      }
-      function onEndEvent() {
-          initSpeechRecgnition()
-      }
-      function initSpeechRecgnition() {
-          runSpeechRecognition(onAnythingSaid, onFinalised, onEndEvent)
-      }
-      initSpeechRecgnition()
-  });
+    await board.ui.on("icon:click", async () => {
+        let y = 0
+
+        function onAnythingSaid(text) {
+            // console.log("Said: ", text)
+
+        }
+
+        async function drawShit(text) {
+            await board.createText({
+                content: text,
+                width: 720,
+                x: 0,
+                y
+            })
+            y += 15
+        }
+
+        function onFinalised(text) {
+            console.log("Finalized: ", text)
+            drawShit(text)
+            if (text.toLowerCase().indexOf("dick") !== -1) {
+                board.viewport.get().then(vp => {
+                    drawAbstraction(
+                        vp.x + vp.width / 2 - 150,
+                        vp.y + vp.height / 2
+                    )
+                })
+            }
+        }
+
+        function onEndEvent() {
+            initSpeechRecgnition()
+        }
+
+        function initSpeechRecgnition() {
+            runSpeechRecognition(onAnythingSaid, onFinalised, onEndEvent)
+        }
+
+        initSpeechRecgnition()
+    });
 }
 
 init();
