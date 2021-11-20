@@ -402,11 +402,10 @@ let zoomOutProcessor = regexpProcessor(async(text) => {
         return;
     }
     let items = await board.get()
-    let left = Math.min(...items.map(i => i.x - i.width / 2))
-    let right = Math.max(...items.map(i => i.x + i.width / 2))
-    let top = Math.min(...items.map(i => i.y - i.height / 2))
-    let bottom = Math.max(...items.map(i => i.y + i.height / 2))
-
+    let left = Math.min(...items.map(i => i.x - (i.width ?? 0) / 2))
+    let right = Math.max(...items.map(i => i.x + (i.width ?? 0) / 2))
+    let top = Math.min(...items.map(i => i.y - (i.height ?? 0) / 2))
+    let bottom = Math.max(...items.map(i => i.y + (i.height ?? 0) / 2))
     const vp = await board.viewport.get()
     vp.x = left
     vp.y = top
@@ -415,10 +414,10 @@ let zoomOutProcessor = regexpProcessor(async(text) => {
     await board.viewport.set({
         viewport: vp,
         padding: {
-            top: (top - bottom) * 0.05,
-            left: (right - left) * 0.05,
-            bottom: (top - bottom) * 0.05,
-            right: (right - left) * 0.05,
+            top: (top - bottom) * 0.1,
+            left: (right - left) * 0.1,
+            bottom: (top - bottom) * 0.1,
+            right: (right - left) * 0.1,
         },
         animationDurationInMs: 300,
     })
