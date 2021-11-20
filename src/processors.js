@@ -1,5 +1,5 @@
 import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter} from "./selectors";
-import {createImage, drawAbstraction, say, zoomByName, decorateByName, saySmooth, sleep} from "./commands";
+import {createImage, drawAbstraction, say, zoomByName, decorateByName, saySmooth, sleep, createText} from "./commands";
 const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
 
 const {board} = miro;
@@ -135,24 +135,28 @@ let fireProcessor = regexpProcessor(async (text) => {
     })
     const images = await Promise.all(promises)
     let i = 0;
-    while(i < 50) {
+    while(i < 5) {
         for (let image of images) {
             image.rotation = Math.random()*180;
             image.x = Math.random()*100 - 50 + x;
             image.y = Math.random()*100 - 50 + y;
             await image.sync();
         }
+        await sleep(1)
         i++;
     }
     let items = await board.get()
     promises = []
     for (let item of items) {
-        promises.push(board.remove(item))
+        promises.push(board.remove(item).catch(() => {}))
     }
     for (let image of images) {
-        promises.push(board.remove(image))
+        promises.push(board.remove(image).catch(() => {}))
     }
     await Promise.all(promises)
+    // let eliminated = await createImage(, x, y, width)
+    await sleep(2000)
+    // await board.remove(eliminated)
 }, new RegExp("destroy everything", 'i'))
 
 
