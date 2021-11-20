@@ -1,5 +1,16 @@
 import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter} from "./selectors";
-import {createImage, drawAbstraction, say, zoomByName, decorateByName, saySmooth, sleep, createText, addCat} from "./commands";
+import {
+    createImage,
+    drawAbstraction,
+    say,
+    zoomByName,
+    decorateByName,
+    saySmooth,
+    sleep,
+    createText,
+    addCat,
+    removeCat
+} from "./commands";
 const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
 
 const {board} = miro;
@@ -108,6 +119,7 @@ async function likeBlockProcessor(text) {
 const sayTextProcessor = regexpProcessor(saySmooth, new RegExp('say (.*)', 'i'))
 const zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
 const addCatProcessor = regexpProcessor(addCat, new RegExp('insert cat', 'i'));
+const removeCatProcessor = regexpProcessor(removeCat, new RegExp('remove cat', 'i'));
 
 const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
 
@@ -228,9 +240,9 @@ export const PHRASES_PROCESSORS = [
     biggerProcessor,
     rickRollProcessor,
     fireProcessor,
-    rickRollProcessor,
     createBlockProcessor,
     linkProcessor,
     eraseAbstractionProcessor,
-    addCatProcessor
+    addCatProcessor,
+    removeCatProcessor
 ]
