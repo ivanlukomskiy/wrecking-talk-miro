@@ -62,39 +62,6 @@ export async function createText(content, x, y, width, color=null) {
     return await miro.board.createText(props)
 }
 
-export async function drawAbstraction(x = 0, y = 0, length = 300, color = "#000000") {
-    await Promise.all([
-        createShape({
-            shape_type: "circle",
-            title: "head",
-            x: x + length,
-            y: y + 50,
-            color: color
-        }),
-        createShape({
-            shape_type: "rectangle",
-            title: "dick",
-            x: x + length / 2,
-            y: y + 50,
-            width: length,
-            color: color
-        }),
-        createShape({
-            shape_type: "circle",
-            title: "nut1",
-            x,
-            y,
-            color: color
-        }),
-        createShape({
-            shape_type: "circle",
-            title: "nut2",
-            x,
-            y: y + 100,
-            color: color
-        }),])
-}
-
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }

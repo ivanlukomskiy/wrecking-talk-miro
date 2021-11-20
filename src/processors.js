@@ -1,12 +1,10 @@
 import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter, getInView} from "./selectors";
 import {
     createImage,
-    drawAbstraction,
     say,
     zoomByName,
     saySmooth,
     sleep,
-    createText,
     addCat,
     removeCat,
     decorate,
@@ -49,40 +47,6 @@ let rickRollProcessor = regexpProcessor(async (text) => {
         height: 200
     })
 }, new RegExp("rick", "i"))
-
-async function dickOnSelectedItemProcessor(text) {
-    if (text !== null) {
-        if (text.toLowerCase().startsWith("dick")) {
-            const rect = await getSelectedRect()
-            let x, y, width, height
-            if (rect !== null) {
-                ({x, y, width, height} = rect)
-            } else {
-                ({x, y} = await getViewCenter())
-                width = -50
-                height = 0
-            }
-            await drawAbstraction(x + width + 50, y + height / 2)
-            return true
-        }
-    }
-    return false
-}
-
-async function addDickToItemProcessor(text) {
-    text = text.toLowerCase();
-    if (text.startsWith("dick at ")) {
-        let name = text.substr("dick at ".length, text.length)
-        console.log("name", name)
-        const item = findByName(name)
-        console.log(item)
-        if (item !== null) {
-            await drawAbstraction(item.x + item.width / 2 + 50, item.y)
-            return true
-        }
-    }
-    return false
-}
 
 const LIKE_REGEXP = new RegExp('.*?like (.*)', 'i')
 
@@ -141,7 +105,7 @@ let poopProcessor = regexpProcessor(async (text) => {
         width: 100
     })
     console.log(poo)
-}, new RegExp("(poo)|(poop)|(shit)", "i"))
+}, new RegExp("(poo)|(poop)", "i"))
 
 let createBlockProcessor = regexpProcessor(async (text) => {
     say(`Creating ${text}...`)
@@ -222,15 +186,6 @@ let linkProcessor = regexpProcessor(async (text) => {
         link(selected[i], selected[i + 1])
     }
 }, new RegExp("link", "i"))
-
-let eraseAbstractionProcessor = regexpProcessor(async (text) => {
-        for (let item of await board.get()) {
-            if (item.content === "dick" || item.content === "nut1" || item.content === "nut2" || item.content === "head") {
-                board.remove(item)
-            }
-        }
-    },
-    new RegExp("erase abstraction", "i"))
 
 
 let alignProcessor = regexpProcessor(async (text) => {
@@ -340,7 +295,6 @@ export const WORD_PROCESSORS = [
 ]
 
 export const PHRASES_PROCESSORS = [
-    dickOnSelectedItemProcessor,
     likeBlockProcessor,
     sayTextProcessor,
     zoomByNameProcessor,
@@ -349,7 +303,6 @@ export const PHRASES_PROCESSORS = [
     fireProcessor,
     createBlockProcessor,
     linkProcessor,
-    eraseAbstractionProcessor,
     addCatProcessor,
     removeCatProcessor,
     alignProcessor,
