@@ -4,12 +4,12 @@ import {
     drawAbstraction,
     say,
     zoomByName,
-    decorateByName,
     saySmooth,
     sleep,
     createText,
     addCat,
-    removeCat
+    removeCat,
+    decorate
 } from "./commands";
 
 const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
@@ -121,20 +121,9 @@ async function likeBlockProcessor(text) {
 
 const sayTextProcessor = regexpProcessor(saySmooth, new RegExp('say (.*)', 'i'))
 const zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
-const addCatProcessor = regexpProcessor(addCat, new RegExp('insert cat', 'i'));
+const addCatProcessor = regexpProcessor(addCat, new RegExp('insert cat', 'i'), new RegExp('spawn cat', 'i'));
 const removeCatProcessor = regexpProcessor(removeCat, new RegExp('remove cat', 'i'));
-
-const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
-
-async function decorateByNameProcessor(text) {
-    const nameMatch = text.match(DECORATE_REGEXP)
-    if (!nameMatch) {
-        return
-    }
-
-    const name = nameMatch[1];
-    await decorateByName(name)
-}
+const decorateProcessor = regexpProcessor(decorate, new RegExp('decorate ?(.*)?', 'i'));
 
 let poopProcessor = regexpProcessor(async (text) => {
     let poo = await board.createText({
@@ -325,7 +314,6 @@ let linkProcessor = regexpProcessor(async (text) => {
     if (selected.length < 2) {
         return await say("Nothing to link!", 1500)
     }
-    say("Linking...")
 
     async function link(first, second) {
         console.log(first, second)
@@ -430,7 +418,10 @@ let zoomOutProcessor = regexpProcessor(async(text) => {
 }, new RegExp('show everything', 'i'), new RegExp("zoom out", "i"))
 
 let fireProcessor = regexpProcessor(async (text) => {
-    const {x, y, width, height} = await board.viewport
+    let {x, y, width, height} = await board.viewport.get()
+    x = x + width / 2
+    y = y + height /2
+    console.log('x, y, width, height', x, y, width, height)
     let promises = [0, 15, 30, 50].map((rotation) => {
         return createImage(FIRES_PIC, x + rotation, y, width, rotation)
     })
@@ -466,12 +457,12 @@ let workspaceProcessor = regexpProcessor(getInView, new RegExp("workspace", "i")
 export const WORD_PROCESSORS = [
     poopProcessor
 ]
+
 export const PHRASES_PROCESSORS = [
     dickOnSelectedItemProcessor,
     likeBlockProcessor,
     sayTextProcessor,
     zoomByNameProcessor,
-    decorateByNameProcessor,
     biggerProcessor,
     rickRollProcessor,
     fireProcessor,
@@ -482,7 +473,7 @@ export const PHRASES_PROCESSORS = [
     removeCatProcessor,
     alignProcessor,
     paintBlockProcessor,
-    addCatProcessor,
     workspaceProcessor,
+    decorateProcessor,
     zoomOutProcessor,
 ]
