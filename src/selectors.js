@@ -1,10 +1,12 @@
+import {createShape} from "./commands";
+
 const {board} = window.miro;
 
 export async function findByName(name) {
     name = name.toLowerCase().replace('\.', '')
     console.log("looking for", name)
     let item = (await board.get()).filter(value => {
-        if(!value.content) {
+        if (!value.content) {
             console.log('Item without content', value)
             return false;
         }
@@ -16,13 +18,16 @@ export async function findByName(name) {
     }
     return item[0]
 }
+
 export async function findByCoords(x, y) {
     return (await board.get()).find(item => Math.floor(item.x) === Math.floor(x) && Math.floor(item.y) === Math.floor(y));
 }
+
 export async function changeColor(item, color) {
     item.style.fillColor = color
     await item.sync()
 }
+
 export async function getSelectedRect() {
     let x = Infinity
     let y = Infinity
@@ -59,4 +64,27 @@ export async function getViewCenter() {
         x: vp.x + vp.width / 2 - 150,
         y: vp.y + vp.height / 2
     }
+}
+
+
+export function marker(x, y) {
+    board.createShape({
+        style: {fillColor: "#ff0000"},
+        x: x,
+        y: y,
+        width: 5,
+        height: 5
+    })
+}
+
+export async function getInView() {
+    let {x, y, width, height} = await board.viewport.get()
+    let items = []
+    for (let item of await board.get()) {
+        if (item.x > x && item.x < x + width && item.y > y && item.y < y + height) {
+            items.push(item)
+        }
+    }
+    return items
+
 }

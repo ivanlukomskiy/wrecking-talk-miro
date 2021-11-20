@@ -1,4 +1,4 @@
-import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter} from "./selectors";
+import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter, getInView} from "./selectors";
 import {
     createImage,
     drawAbstraction,
@@ -300,10 +300,27 @@ function convert(color) {
     return false;
 }
 
+const paintBlockProcessor = async text => {
+    const match = text.match(/paint (.*?) (.*)/)
+    if (!match) {
+        return
+    }
+    const blockName = match[1];
+    const color = match[2].toLowerCase();
+
+    const blockToPaint = await findByName(blockName);
+
+    blockToPaint.style.fillColor = convert(color);
+    await blockToPaint.sync();
+}
+
 let linkProcessor = regexpProcessor(async (text) => {
     let selected = await board.getSelection()
+    if (selected.length === 0) {
+        selected = await getInView()
+    }
     if (selected.length < 2) {
-        return await say("Need two widgets selected to use link!", 1500)
+        return await say("Nothing to link!", 1500)
     }
 
     async function link(first, second) {
@@ -341,19 +358,16 @@ let eraseAbstractionProcessor = regexpProcessor(async (text) => {
     },
     new RegExp("erase abstraction", "i"))
 
-function marker(x, y) {
-    board.createShape({
-        style: {fillColor: "#ff0000"},
-        x: x,
-        y: y,
-        width: 5,
-        height: 5
-    })
-}
 
 let alignProcessor = regexpProcessor(async (text) => {
     let items = await board.getSelection()
-
+    if (items.length === 0) {
+        items =await getInView()
+    }
+    if (items.length < 2) {
+        say("Nothing to align!")
+        return
+    }
     function align(items, mainAxis = "x", secondAxis = "y") {
         items = items.sort((x, y) => {
             if (x[mainAxis] < y[mainAxis]) return -1;
@@ -441,6 +455,7 @@ let fireProcessor = regexpProcessor(async (text) => {
     await board.remove(eliminated)
 }, new RegExp("destroy everything", 'i'))
 
+let workspaceProcessor = regexpProcessor(getInView, new RegExp("workspace", "i"))
 
 export const WORD_PROCESSORS = [
     dickOnSelectedItemProcessor,
@@ -461,5 +476,8 @@ export const PHRASES_PROCESSORS = [
     addCatProcessor,
     removeCatProcessor,
     alignProcessor,
+    paintBlockProcessor,
+    addCatProcessor,
+    workspaceProcessor,
     zoomOutProcessor,
 ]
