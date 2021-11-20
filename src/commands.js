@@ -2,9 +2,9 @@ import {findByName} from "./selectors";
 
 const {board} = window.miro;
 const FLOWER_URLS = [
-    'https://i.ibb.co/74kxtY8/flower1.png',
-    'https://i.ibb.co/FDqdb8b/flower2.png',
-    'https://i.ibb.co/tMhggpj/flower3.png',
+    'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/flower1.png?raw=true',
+    'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/flower2.png?raw=true',
+    'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/flower3.png?raw=true',
 ]
 
 export function createShape({shape_type, title = "", x = 0, y = 0, width = 100, height = 100, color = "f000000"}) {
