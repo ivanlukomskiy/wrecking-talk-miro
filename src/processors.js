@@ -1,5 +1,5 @@
 import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter} from "./selectors";
-import {createImage, drawAbstraction, say, zoomByName, decorateByName} from "./commands";
+import {createImage, drawAbstraction, say, zoomByName, decorateByName, saySmooth} from "./commands";
 
 const {board} = miro;
 
@@ -14,14 +14,23 @@ function regexpProcessor(handler, ...regexps) {
     }
 }
 
-async function biggerProcessor(text) {
-    let item = findByName(text)
-    if (item !== null) {
-        item.height += 50
-        item.width += 50
-        await item.sync()
-    }
-}
+let biggerProcessor = regexpProcessor(async (text) => {
+    let items = await board.getSelection()
+    items.forEach((item) => {
+        item.height = item.height + 50
+        item.width = item.width + 50
+        item.sync()
+    })
+}, new RegExp("bigger", "i"))
+
+let rickRollProcessor = regexpProcessor(async (text) => {
+    await board.createEmbed({
+        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        ...await getViewCenter(),
+        width: 300,
+        height: 200
+    })
+}, new RegExp("rick", "i"))
 
 async function dickOnSelectedItemProcessor(text) {
     if (text !== null) {
@@ -95,10 +104,8 @@ async function likeBlockProcessor(text) {
     return true
 }
 
-
-let sayTextProcessor = regexpProcessor(say, new RegExp('say (.*)', 'i'))
+let sayTextProcessor = regexpProcessor(saySmooth, new RegExp('say (.*)', 'i'))
 let zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
-
 
 const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
 
@@ -113,12 +120,23 @@ async function decorateByNameProcessor(text) {
 
 let poopProcessor = regexpProcessor(async (text) => {
     let poo = await board.createText({
-        content: "<p style=\"font-size:100px;\">💩</p>", ...await getViewCenter(),
+        content: "<p style=\"font-size:100px;\"><font>💩</font></p>", ...await getViewCenter(),
         width: 100
     })
     console.log(poo)
 }, new RegExp("(poo)|(poop)|(shit)", "i"))
 
 
-export const WORD_PROCESSORS = [dickOnSelectedItemProcessor, poopProcessor]
-export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor, zoomByNameProcessor, decorateByNameProcessor]
+export const WORD_PROCESSORS = [
+    dickOnSelectedItemProcessor,
+    poopProcessor
+]
+export const PHRASES_PROCESSORS = [
+    addDickToItemProcessor,
+    likeBlockProcessor,
+    sayTextProcessor,
+    zoomByNameProcessor,
+    decorateByNameProcessor,
+    biggerProcessor,
+    rickRollProcessor
+]

@@ -1,5 +1,6 @@
 import {PHRASES_PROCESSORS, WORD_PROCESSORS} from "./processors";
 import {runSpeechRecognition} from "./recognition";
+import {saySmooth} from "./commands";
 
 const {board} = window.miro;
 
@@ -82,3 +83,7 @@ async function init() {
 }
 
 init();
+
+// setInterval(() => {
+//     saySmooth("You little kitten!")
+// }, 15000)
