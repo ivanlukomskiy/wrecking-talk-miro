@@ -3,6 +3,26 @@ import {createImage, drawAbstraction, say, zoomByName, decorateByName} from "./c
 
 const {board} = miro;
 
+function regexpProcessor(handler, ...regexps) {
+    return async function (text) {
+        for (let r of regexps) {
+            let match = r.exec(text)
+            if (match) {
+                return handler(match[1])
+            }
+        }
+    }
+}
+
+async function biggerProcessor(text) {
+    let item = findByName(text)
+    if (item !== null) {
+        item.height += 50
+        item.width += 50
+        await item.sync()
+    }
+}
+
 async function dickOnSelectedItemProcessor(text) {
     if (text !== null) {
         if (text.toLowerCase().indexOf("dick") !== -1) {
@@ -61,33 +81,10 @@ async function likeBlockProcessor(text) {
     return false
 }
 
-const SAY_REGEXP = new RegExp('say (.*)', 'i')
 
-async function sayTextProcessor(text) {
-    const match = SAY_REGEXP.exec(text)
-    if (match) {
-        await say(match[1])
-    }
-}
+let sayTextProcessor = regexpProcessor(say, new RegExp('say (.*)', 'i'))
+let zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
 
-const ZOOM_REGEXP = new RegExp('zoom on (.*)', 'i')
-const FIND_REGEXP = new RegExp('find (.*)', 'i')
-
-async function zoomByNameProcessor(text) {
-    let name = null
-    const zoomMatch = ZOOM_REGEXP.exec(text)
-    if (zoomMatch) {
-        name = zoomMatch[1]
-    }
-    const findMatch = FIND_REGEXP.exec(text)
-    if (findMatch) {
-        name = findMatch[1]
-    }
-    if (name !== null) {
-        await zoomByName(name)
-    }
-
-}
 
 const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
 
@@ -99,14 +96,15 @@ async function decorateByNameProcessor(text) {
     const name = nameMatch[1];
     await decorateByName(name)
 }
-const POO_REGEXP = new RegExp("(poo)|(poop)|(shit)", "i")
 
-async function poopProcessor(text) {
-    if (POO_REGEXP.exec(text)) {
-        let poo = await board.createText({content: "<p style=\"font-size:100px;\">💩</p>", ...await getViewCenter(), width: 100})
-        console.log(poo)
-    }
-}
+let poopProcessor = regexpProcessor(async (text) => {
+    let poo = await board.createText({
+        content: "<p style=\"font-size:100px;\">💩</p>", ...await getViewCenter(),
+        width: 100
+    })
+    console.log(poo)
+}, new RegExp("(poo)|(poop)|(shit)", "i"))
+
 
 export const WORD_PROCESSORS = [dickOnSelectedItemProcessor, poopProcessor]
-export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor, zoomByNameProcessor, decorateByNameProcesso]
+export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor, zoomByNameProcessor, decorateByNameProcessor]
