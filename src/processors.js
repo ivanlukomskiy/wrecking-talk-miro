@@ -300,6 +300,20 @@ function convert(color) {
     return false;
 }
 
+const paintBlockProcessor = async text => {
+    const match = text.match(/paint (.*?) (.*)/)
+    if (!match) {
+        return
+    }
+    const blockName = match[1];
+    const color = match[2].toLowerCase();
+
+    const blockToPaint = await findByName(blockName);
+
+    blockToPaint.style.fillColor = convert(color);
+    await blockToPaint.sync();
+}
+
 let linkProcessor = regexpProcessor(async (text) => {
     let selected = await board.getSelection()
     if (selected.length === 0) {
@@ -380,6 +394,7 @@ let alignProcessor = regexpProcessor(async (text) => {
         align(items, "y", "x")
     }
 }, new RegExp("align", "i"))
+
 let fireProcessor = regexpProcessor(async (text) => {
     const {x, y, width, height} = await board.viewport
     let promises = [0, 15, 30, 50].map((rotation) => {
@@ -433,6 +448,7 @@ export const PHRASES_PROCESSORS = [
     addCatProcessor,
     removeCatProcessor,
     alignProcessor,
+    paintBlockProcessor,
     addCatProcessor,
     workspaceProcessor
 ]
