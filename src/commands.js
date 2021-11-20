@@ -15,6 +15,17 @@ export function createShape({shape_type, title = "", x = 0, y = 0, width = 100, 
     }
 }
 
+export async function createImage(url, x, y, width) {
+    await miro.board.createImage({
+        title: '',
+        url,
+        x, // Default value: horizontal center of the board
+        y, // Default value: vertical center of the board
+        width,
+        rotation: 0.0,
+    });
+}
+
 export async function drawAbstraction(x = 0, y = 0, length = 300, color = "#000000") {
     await Promise.all([
         board.createShape(createShape({

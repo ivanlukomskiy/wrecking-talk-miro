@@ -2,6 +2,9 @@ const {board} = window.miro;
 
 export async function findByName(name) {
     let item = (await board.get()).filter(value => {
+        if(!value.content) {
+            return false;
+        }
         console.log(value.content.toLowerCase().indexOf(name) !== -1, value)
         return value.content.toLowerCase().indexOf(name) !== -1//value.content.toLowerCase() === `<p>${name.toLowerCase()}</p>>`
     })
@@ -9,6 +12,10 @@ export async function findByName(name) {
         return null
     }
     return item[0]
+}
+export async function changeColor(item, color) {
+    item.style.fillColor = color
+    await item.sync()
 }
 export async function getSelectedRect() {
     let x = Infinity

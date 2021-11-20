@@ -1,7 +1,7 @@
 const {board} = window.miro;
-import {drawAbstraction, createShape} from "./commands.js"
+import {drawAbstraction, createShape, createImage} from "./commands.js"
 import {runSpeechRecognition} from "./recognition";
-import {getSelectedRect, findByName, getViewCenter} from "./selectors";
+import {getSelectedRect, findByName, getViewCenter, changeColor} from "./selectors";
 
 let textCache = new Set();
 let lastText = undefined;
@@ -76,9 +76,17 @@ const LIKE_REGEXP = new RegExp('like (.*)', 'i')
 async function likeBlockProcessor(text) {
     const match = LIKE_REGEXP.exec(text)
     if (match) {
-        const target = match[1]
-        console.log('target', target)
-        return true
+        const targetName = match[1]
+        console.log('target name:', targetName)
+        const target = await findByName(targetName)
+        if (target) {
+            console.log('found target', target)
+            let {x, y, width, height} = target
+            await createImage('https://icon2.cleanpng.com/20171220/oeq/smiley-png-5a3a2721b28479.1204919515137605457312.jpg',
+                x + width / 2, y + height / 2, width / 7)
+            await changeColor(target, '#F590F7')
+            return true
+        }
     }
     return false
 }
