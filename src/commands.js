@@ -75,7 +75,7 @@ export async function say(text, timeout = 1500, x=null, y=null) {
             x: x ?? (vp.x + vp.width / 4),
             y: y ?? (vp.y + vp.height * 3 / 4),
             title: `<strong>${capitalizeFirstLetter(text)}</strong>`,
-            color: "#bbbbbb"
+            color: "#dddddd"
         }
     )
     setTimeout(() => {
@@ -234,5 +234,10 @@ export async function removeDecorations() {
 
 export async function removeColor(color) {
     const items = (await board.get()).filter(item => item.style && item.style.fillColor === convert(color));
+    await removeAll(items);
+}
+
+export async function removeByName(name) {
+    const items = (await board.get()).filter(item => item.content && item.content === name);
     await removeAll(items);
 }
