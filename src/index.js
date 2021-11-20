@@ -1,5 +1,5 @@
 const {board} = window.miro;
-import {drawAbstraction} from "./commands.js"
+import {drawAbstraction, createShape} from "./commands.js"
 
 let textCache = new Set();
 let lastText = undefined;
@@ -70,6 +70,48 @@ function getNewPart(text) {
     }
     return null
 }
+
+async function getViewCenter() {
+    let vp = await board.viewport.get()
+    return {x: vp.x + vp.width / 2 - 150,
+    y: vp.y + vp.height / 2}
+}
+
+async function findByName(name) {
+    let item = (await board.get()).filter(value => {
+        console.log(value.content.toLowerCase().indexOf(name) !== -1, value)
+        return value.content.toLowerCase().indexOf(name) !== -1//value.content.toLowerCase() === `<p>${name.toLowerCase()}</p>>`
+    })
+    if (item.length === 0) {
+        return null
+    }
+    return item[0]
+}
+async function getSelectedRect() {
+    let x = Infinity
+    let y = Infinity
+    let right= -Infinity
+    let bottom = -Infinity
+    // console.log(await board.getSelection())
+    for (const item of await board.getSelection()) {
+        // console.log(item, item.x ,item.y, item.width, item.height)
+        x = Math.min(x, item.x - item.width / 2)
+        y = Math.min(y, item.y - item.height / 2)
+        right = Math.max(right, item.x + item.width / 2)
+        bottom = Math.max(bottom, item.y + item.height / 2)
+    }
+    // console.log(x, y, right, bottom)
+    // await board.createShape(createShape({shape_type:"rectangle", x: x, y: y, height:5, width:5, color: "#ff0000"}))
+    // await board.createShape(createShape({shape_type:"rectangle", x: x, y: bottom, height:5, width:5, color: "#ff0000"}))
+    // await board.createShape(createShape({shape_type:"rectangle", x: right, y: y, height:5, width:5, color: "#ff0000"}))
+    // await board.createShape(createShape({shape_type:"rectangle", x: right, y: bottom, height:5, width:5, color: "#ff0000"}))
+    return {
+        x: x,
+        y: y,
+        width: right - x,
+        height: bottom - y
+    }
+}
 async function init() {
     await board.ui.on("icon:click", async () => {
         let y = 0
@@ -79,11 +121,15 @@ async function init() {
             let newPart = getNewPart(text)
             if (newPart !== null){
                 if (newPart.toLowerCase().indexOf("dick") !== -1) {
-                    board.viewport.get().then(vp => {
-                        drawAbstraction(
-                            vp.x + vp.width / 2 - 150,
-                            vp.y + vp.height / 2
-                        )
+                    // getViewCenter().then((x, y) => {
+                    //     drawAbstraction(
+                    //         x ,y
+                    //     )
+                    // })
+                    getSelectedRect().then(({x, y, width, height}) => {
+                        // console.log(x, y, w, h)
+
+                        drawAbstraction(x + width + 50, y + height / 2)
                     })
                 }
             }
@@ -104,8 +150,19 @@ async function init() {
             console.log("Finalized: ", text)
             textCache = new Set()
             lastText = undefined
-            drawShit(text)
+            // drawShit(text)
 
+            text = text.toLowerCase();
+            if (text.startsWith("dick at ")) {
+                let name = text.substr("dick at ".length, text.length)
+                console.log("name", name)
+                findByName(name).then(item => {
+                    console.log(item)
+                    if (item !== null) {
+                        drawAbstraction(item.x + item.width / 2+ 50, item.y)
+                    }
+                })
+            }
         }
 
         function onEndEvent() {
