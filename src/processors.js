@@ -139,7 +139,7 @@ const removeCatProcessor = regexpProcessor(removeCat, new RegExp('remove cat', '
 const decorateProcessor = regexpProcessor(decorate, new RegExp('decorate ?(.*)?', 'i'));
 const removeDecorationsProcessor = regexpProcessor(removeDecorations, new RegExp('remove decorations', 'i'));
 const removeColorProcessor = regexpProcessor(removeColor, new RegExp('remove color (.*)', 'i'));
-const removeByNameProcessor = regexpProcessor(removeByName, new RegExp('remove (.*)', 'i'));
+const removeByNameProcessor = regexpProcessor(removeByName, new RegExp('delete (.*)', 'i'));
 
 let poopProcessor = regexpProcessor(async (text) => {
     let poo = await board.createText({
