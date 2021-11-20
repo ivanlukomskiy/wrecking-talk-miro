@@ -138,3 +138,14 @@ export async function decorateByName(name) {
     }
     await Promise.all(promises)
 }
+
+export async function addKittyTo(name) {
+    const item = await findByName(name)
+    if (!item) {
+        return
+    }
+
+    await item.sync();
+
+    const { x, y } = item;
+}

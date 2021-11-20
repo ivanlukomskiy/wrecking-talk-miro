@@ -95,10 +95,8 @@ async function likeBlockProcessor(text) {
     return true
 }
 
-
 let sayTextProcessor = regexpProcessor(say, new RegExp('say (.*)', 'i'))
 let zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
-
 
 const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
 
