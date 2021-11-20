@@ -1,5 +1,5 @@
 import {changeColor, findByName, getSelectedRect, getViewCenter} from "./selectors";
-import {createImage, drawAbstraction, say, zoomByName} from "./commands";
+import {createImage, drawAbstraction, say, zoomByName, decorateByName} from "./commands";
 
 const {board} = miro;
 
@@ -48,8 +48,8 @@ async function likeBlockProcessor(text) {
         if (target) {
             console.log('found target', target)
             let {x, y, width, height} = target
-            await createImage('https://i.ibb.co/GPC8SQB/like.png',
-                x + width / 2, y + height / 2, width / 7)
+            await createImage('https://i.ibb.co/Qmgnsqr/like.png',
+                x + width / 2, y + height / 2, width / 5)
             let oldColor = target.style.fillColor
             await changeColor(target, '#F590F7')
             setTimeout(() => {
@@ -89,6 +89,16 @@ async function zoomByNameProcessor(text) {
 
 }
 
+const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
+
+async function decorateByNameProcessor(text) {
+    const nameMatch = text.match(DECORATE_REGEXP)
+    if (!nameMatch) {
+        return
+    }
+    const name = nameMatch[1];
+    await decorateByName(name)
+}
 const POO_REGEXP = new RegExp("(poo)|(poop)|(shit)", "i")
 
 async function poopProcessor(text) {
@@ -99,4 +109,4 @@ async function poopProcessor(text) {
 }
 
 export const WORD_PROCESSORS = [dickOnSelectedItemProcessor, poopProcessor]
-export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor, zoomByNameProcessor]
+export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor, zoomByNameProcessor, decorateByNameProcesso]
