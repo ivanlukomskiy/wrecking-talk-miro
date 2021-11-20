@@ -11,6 +11,7 @@ import {
     addCat,
     removeCat
 } from "./commands";
+
 const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
 const ELIMINATED_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/eliminated.png?raw=true'
 const BOOM_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/boom.png?raw=true'
@@ -130,6 +131,7 @@ async function decorateByNameProcessor(text) {
     if (!nameMatch) {
         return
     }
+
     const name = nameMatch[1];
     await decorateByName(name)
 }
@@ -143,6 +145,7 @@ let poopProcessor = regexpProcessor(async (text) => {
 }, new RegExp("(poo)|(poop)|(shit)", "i"))
 
 let createBlockProcessor = regexpProcessor(async (text) => {
+    say(`Creating ${text}...`)
     await board.createShape({
         shape: "rectangle",
         ...await getViewCenter(),
@@ -322,6 +325,7 @@ let linkProcessor = regexpProcessor(async (text) => {
     if (selected.length < 2) {
         return await say("Nothing to link!", 1500)
     }
+    say("Linking...")
 
     async function link(first, second) {
         console.log(first, second)
@@ -362,12 +366,14 @@ let eraseAbstractionProcessor = regexpProcessor(async (text) => {
 let alignProcessor = regexpProcessor(async (text) => {
     let items = await board.getSelection()
     if (items.length === 0) {
-        items =await getInView()
+        items = await getInView()
     }
     if (items.length < 2) {
         say("Nothing to align!")
         return
     }
+    say("Aligning...")
+
     function align(items, mainAxis = "x", secondAxis = "y") {
         items = items.sort((x, y) => {
             if (x[mainAxis] < y[mainAxis]) return -1;

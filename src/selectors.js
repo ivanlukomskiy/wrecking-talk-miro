@@ -61,7 +61,7 @@ export async function getSelectedRect() {
 export async function getViewCenter() {
     let vp = await board.viewport.get()
     return {
-        x: vp.x + vp.width / 2 - 150,
+        x: vp.x + vp.width / 2,
         y: vp.y + vp.height / 2
     }
 }
