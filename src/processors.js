@@ -1,5 +1,5 @@
 import {changeColor, findByName, getSelectedRect, getViewCenter} from "./selectors";
-import {createImage, drawAbstraction, say, zoomByName} from "./commands";
+import {createImage, drawAbstraction, say, zoomByName, decorateByName} from "./commands";
 
 async function dickOnSelectedItemProcessor(text) {
     if (text !== null) {
@@ -83,6 +83,16 @@ async function zoomByNameProcessor(text) {
 
 }
 
+const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
+
+async function decorateByNameProcessor(text) {
+    const nameMatch = text.match(DECORATE_REGEXP)
+    if (!nameMatch) {
+        return
+    }
+    const name = nameMatch[1];
+    await decorateByName(name)
+}
 
 export const WORD_PROCESSORS = [dickOnSelectedItemProcessor]
-export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor, zoomByNameProcessor]
+export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor, zoomByNameProcessor, decorateByNameProcessor]
