@@ -380,6 +380,35 @@ let alignProcessor = regexpProcessor(async (text) => {
         align(items, "y", "x")
     }
 }, new RegExp("align", "i"))
+
+let zoomOutProcessor = regexpProcessor(async(text) => {
+    const objects = await board.get()
+    if (objects.length === 0) {
+        return;
+    }
+    let items = await board.get()
+    let left = Math.min(...items.map(i => i.x - i.width / 2))
+    let right = Math.max(...items.map(i => i.x + i.width / 2))
+    let top = Math.min(...items.map(i => i.y - i.height / 2))
+    let bottom = Math.max(...items.map(i => i.y + i.height / 2))
+
+    const vp = await board.viewport.get()
+    vp.x = left
+    vp.y = top
+    vp.width = right - left
+    vp.height = bottom - top
+    await board.viewport.set({
+        viewport: vp,
+        padding: {
+            top: (top - bottom) * 0.15,
+            left: (right - left) * 0.15,
+            bottom: (top - bottom) * 0.15,
+            right: (right - left) * 0.15,
+        },
+        animationDurationInMs: 300,
+    })
+}, new RegExp('show everything', 'i'))
+
 let fireProcessor = regexpProcessor(async (text) => {
     const {x, y, width, height} = await board.viewport
     let promises = [0, 15, 30, 50].map((rotation) => {
@@ -432,4 +461,5 @@ export const PHRASES_PROCESSORS = [
     addCatProcessor,
     removeCatProcessor,
     alignProcessor,
+    zoomOutProcessor,
 ]
