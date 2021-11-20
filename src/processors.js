@@ -168,9 +168,6 @@ const paintBlockProcessor = async text => {
 
 let linkProcessor = regexpProcessor(async (text) => {
     let selected = await board.getSelection()
-    if (selected.length === 0) {
-        selected = await getInView()
-    }
     if (selected.length < 2) {
         return await say("Nothing to link!", 1500)
     }
@@ -180,6 +177,7 @@ let linkProcessor = regexpProcessor(async (text) => {
         let x1, x2, y1 ,y2
         let a1 = -first.x + second.x + second.y
         let a2 = first.x + second.y - second.x
+        let arrow = "right_arrow"
         if (first.y <= a1 && first.y >= a2) {
             y1 = first.y
             y2 = second.y
@@ -195,6 +193,7 @@ let linkProcessor = regexpProcessor(async (text) => {
             y2 = second.y
             x1 = first.x - first.width / 2
             x2 = second.x + second.width / 2
+            arrow = "left_arrow"
         } else if (first.y >= a1 && first.y >= a2) {
             x1 = first.x
             x2 = second.x
@@ -208,7 +207,7 @@ let linkProcessor = regexpProcessor(async (text) => {
         let width = Math.sqrt(Y * Y + c * c)
         console.log(x1, x2, y1, y2, c, Y, angle, width)
         await board.createShape({
-            shape: "right_arrow",
+            shape: arrow,
             x: x1 + c / 2,
             y: y1 + Y / 2,
             width: width,
