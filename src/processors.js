@@ -21,6 +21,9 @@ const BOOM_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/
 
 const {board} = miro;
 
+let previousCreated= null
+let created = null
+
 function regexpProcessor(handler, ...regexps) {
     return async function (text) {
         for (let r of regexps) {
@@ -145,13 +148,15 @@ let poopProcessor = regexpProcessor(async (text) => {
 
 let createBlockProcessor = regexpProcessor(async (text) => {
     say(`Creating ${text}...`)
-    await createShape({
+    let item = await createShape({
         shape_type: "round_rectangle",
         ...await getViewCenter(),
         title: text,
         strictSpace: false,
         color: "#dddddd"
     })
+    previousCreated = created
+    created = item
 }, new RegExp("create (.*)", "i"))
 
 const paintBlockProcessor = async text => {
@@ -170,6 +175,9 @@ const paintBlockProcessor = async text => {
 
 let linkProcessor = regexpProcessor(async (text) => {
     let selected = await board.getSelection()
+    if (selected.length === 0 &&created !== null && previousCreated !== null) {
+        selected = [previousCreated, created]
+    }
     if (selected.length < 2) {
         return await say("Nothing to link!", 1500)
     }
@@ -335,6 +343,20 @@ let fireProcessor = regexpProcessor(async (text) => {
 
 let workspaceProcessor = regexpProcessor(getInView, new RegExp("workspace", "i"))
 
+let renameProcessor = regexpProcessor(async (text) => {
+    let selected = await board.getSelection()
+    if (selected.length === 0) {
+        say("Nothing is selected!")
+        return
+    }
+    if (selected.length > 1) {
+        say("More than one object selected!")
+        return
+    }
+    selected[0].content = text
+    await selected[0].sync()
+}, new RegExp("rename (.*)", "i"), new RegExp("annotate (.*)", "i"))
+
 export const WORD_PROCESSORS = [
     poopProcessor
 ]
@@ -359,4 +381,5 @@ export const PHRASES_PROCESSORS = [
     zoomOutProcessor,
     removeDecorationsProcessor,
     removeColorProcessor,
+    renameProcessor
 ]

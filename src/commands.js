@@ -108,7 +108,7 @@ export async function say(text, timeout = 1500) {
             x: vp.x + vp.width / 4,
             y: vp.y + vp.height * 3 / 4,
             title: `<strong>${capitalizeFirstLetter(text)}</strong>`,
-            color: "#bbbbbb"
+            color: "#dddddd"
         }
     )
     setTimeout(() => {
