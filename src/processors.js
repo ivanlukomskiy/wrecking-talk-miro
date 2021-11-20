@@ -9,7 +9,8 @@ import {
     createText,
     addCat,
     removeCat,
-    decorate
+    decorate,
+    removeDecorations
 } from "./commands";
 
 const FIRES_PIC = 'https://github.com/ivanlukomskiy/wrecking-talk-miro/blob/main/src/assets/fires.png?raw=true'
@@ -124,6 +125,7 @@ const zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)
 const addCatProcessor = regexpProcessor(addCat, new RegExp('insert cat', 'i'), new RegExp('spawn cat', 'i'));
 const removeCatProcessor = regexpProcessor(removeCat, new RegExp('remove cat', 'i'));
 const decorateProcessor = regexpProcessor(decorate, new RegExp('decorate ?(.*)?', 'i'));
+const removeDecorationsProcessor = regexpProcessor(removeDecorations, new RegExp('remove decorations', 'i'));
 
 let poopProcessor = regexpProcessor(async (text) => {
     let poo = await board.createText({
@@ -477,4 +479,5 @@ export const PHRASES_PROCESSORS = [
     workspaceProcessor,
     decorateProcessor,
     zoomOutProcessor,
+    removeDecorationsProcessor,
 ]

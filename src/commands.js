@@ -185,7 +185,7 @@ export const decorateItem = async item => {
     for(let flowerIdx = 0; flowerIdx<FLOWER_URLS.length; flowerIdx++) {
         for (let i = 0; i <= 7; i++) {
             const coords = chooseFlowerCoords(x,y,width,height)
-            promises.push(createImage(FLOWER_URLS[flowerIdx], coords['x'], coords['y'], coords['width'], height['height']))
+            promises.push(createImage(FLOWER_URLS[flowerIdx], coords['x'], coords['y'], coords['width'], height['height'], 'decoration'))
         }
     }
     await Promise.all(promises)
@@ -227,4 +227,9 @@ export async function findByTitle(title) {
 export async function removeCat() {
     const cats = await Promise.all([findByTitle('cat0'), findByTitle('cat1')]);
     await Promise.all(cats.map(async cat => await board.remove(cat)))
+}
+
+export async function removeDecorations() {
+    const decorations = (await board.get()).filter(item => item.title === 'decoration');
+    await Promise.all(decorations.map(async decor => await board.remove(decor)))
 }
