@@ -1,5 +1,27 @@
-import {changeColor, findByName, getSelectedRect, getViewCenter} from "./selectors";
+import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter} from "./selectors";
 import {createImage, drawAbstraction, say, zoomByName, decorateByName} from "./commands";
+
+const {board} = miro;
+
+function regexpProcessor(handler, ...regexps) {
+    return async function (text) {
+        for (let r of regexps) {
+            let match = r.exec(text)
+            if (match) {
+                return handler(match[1])
+            }
+        }
+    }
+}
+
+async function biggerProcessor(text) {
+    let item = findByName(text)
+    if (item !== null) {
+        item.height += 50
+        item.width += 50
+        await item.sync()
+    }
+}
 
 async function dickOnSelectedItemProcessor(text) {
     if (text !== null) {
@@ -35,53 +57,48 @@ async function addDickToItemProcessor(text) {
     return false
 }
 
-const LIKE_REGEXP = new RegExp('like (.*)', 'i')
+const LIKE_REGEXP = new RegExp('.*?like (.*)', 'i')
 
 async function likeBlockProcessor(text) {
     const match = LIKE_REGEXP.exec(text)
-    if (match) {
-        const targetName = match[1]
-        console.log('target name:', targetName)
-        const target = await findByName(targetName)
-        if (target) {
-            console.log('found target', target)
-            let {x, y, width, height} = target
-            await createImage('https://i.ibb.co/Qmgnsqr/like.png',
-                x + width / 2, y + height / 2, width / 5)
-            await changeColor(target, '#F590F7')
-            return true
-        }
+    if (!match) {
+        return false
     }
-    return false
+
+    const targetName = match[1]
+    console.log('target name:', targetName)
+    const target = await findByName(targetName)
+    if (!target) {
+        return false
+    }
+
+    let isLike = true;
+    if (match[0].startsWith('dis')) {
+        isLike = false
+    }
+
+    console.log('found target', target)
+    let {x, y, width, height} = target
+    const adornmentX = x + width / 2;
+    const adornmentY = y + height / 2;
+    const adornment = await findByCoords(adornmentX, adornmentY)
+    if (adornment) {
+        await miro.board.remove(adornment)
+    }
+    await createImage(isLike ? 'https://i.ibb.co/Qmgnsqr/like.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Twemoji_1f4a9.svg/176px-Twemoji_1f4a9.svg.png',
+        adornmentX, adornmentY, width / 5)
+    let oldColor = target.style.fillColor
+    await changeColor(target, isLike ? '#F590F7' : '#CD9575')
+    setTimeout(() => {
+        changeColor(target, oldColor)
+    }, 2000)
+    return true
 }
 
-const SAY_REGEXP = new RegExp('say (.*)', 'i')
 
-async function sayTextProcessor(text) {
-    const match = SAY_REGEXP.exec(text)
-    if (match) {
-        await say(match[1])
-    }
-}
+let sayTextProcessor = regexpProcessor(say, new RegExp('say (.*)', 'i'))
+let zoomByNameProcessor = regexpProcessor(zoomByName, new RegExp('zoom on (.*)', 'i'), new RegExp('find (.*)', 'i'))
 
-const ZOOM_REGEXP = new RegExp('zoom on (.*)', 'i')
-const FIND_REGEXP = new RegExp('find (.*)', 'i')
-
-async function zoomByNameProcessor(text) {
-    let name = null
-    const zoomMatch = ZOOM_REGEXP.exec(text)
-    if (zoomMatch) {
-        name = zoomMatch[1]
-    }
-    const findMatch = FIND_REGEXP.exec(text)
-    if (findMatch) {
-        name = findMatch[1]
-    }
-    if (name !== null) {
-        await zoomByName(name)
-    }
-
-}
 
 const DECORATE_REGEXP = new RegExp('decorate (.*)', 'i')
 
@@ -94,5 +111,14 @@ async function decorateByNameProcessor(text) {
     await decorateByName(name)
 }
 
-export const WORD_PROCESSORS = [dickOnSelectedItemProcessor]
+let poopProcessor = regexpProcessor(async (text) => {
+    let poo = await board.createText({
+        content: "<p style=\"font-size:100px;\">💩</p>", ...await getViewCenter(),
+        width: 100
+    })
+    console.log(poo)
+}, new RegExp("(poo)|(poop)|(shit)", "i"))
+
+
+export const WORD_PROCESSORS = [dickOnSelectedItemProcessor, poopProcessor]
 export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor, zoomByNameProcessor, decorateByNameProcessor]
