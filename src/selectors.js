@@ -1,12 +1,14 @@
 const {board} = window.miro;
 
 export async function findByName(name) {
+    name = name.toLowerCase()
+    console.log("looking for", name)
     let item = (await board.get()).filter(value => {
         if(!value.content) {
             return false;
         }
         console.log(value.content.toLowerCase().indexOf(name) !== -1, value)
-        return value.content.toLowerCase().indexOf(name) !== -1//value.content.toLowerCase() === `<p>${name.toLowerCase()}</p>>`
+        return value.content.toLowerCase().indexOf(name) !== -1
     })
     if (item.length === 0) {
         return null

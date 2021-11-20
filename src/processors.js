@@ -1,5 +1,5 @@
 import {changeColor, findByName, getSelectedRect, getViewCenter} from "./selectors";
-import {createImage, drawAbstraction, say} from "./commands";
+import {createImage, drawAbstraction, say, zoomByName} from "./commands";
 
 async function dickOnSelectedItemProcessor(text) {
     if (text !== null) {
@@ -69,5 +69,25 @@ async function sayTextProcessor(text) {
     }
 }
 
+const ZOOM_REGEXP = new RegExp('zoom on (.*)', 'i')
+const FIND_REGEXP = new RegExp('find (.*)', 'i')
+
+async function zoomByNameProcessor(text) {
+    let name = null
+    const zoomMatch = ZOOM_REGEXP.exec(text)
+    if (zoomMatch) {
+        name = zoomMatch[1]
+    }
+    const findMatch = FIND_REGEXP.exec(text)
+    if (findMatch) {
+        name = findMatch[1]
+    }
+    if (name !== null) {
+        await zoomByName(name)
+    }
+
+}
+
+
 export const WORD_PROCESSORS = [dickOnSelectedItemProcessor]
-export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor]
+export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor, zoomByNameProcessor]
