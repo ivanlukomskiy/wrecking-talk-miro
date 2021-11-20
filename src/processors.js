@@ -1,6 +1,8 @@
 import {changeColor, findByName, getSelectedRect, getViewCenter} from "./selectors";
 import {createImage, drawAbstraction, say, zoomByName} from "./commands";
 
+const {board} = miro;
+
 async function dickOnSelectedItemProcessor(text) {
     if (text !== null) {
         if (text.toLowerCase().indexOf("dick") !== -1) {
@@ -48,7 +50,11 @@ async function likeBlockProcessor(text) {
             let {x, y, width, height} = target
             await createImage('https://i.ibb.co/GPC8SQB/like.png',
                 x + width / 2, y + height / 2, width / 7)
+            let oldColor = target.style.fillColor
             await changeColor(target, '#F590F7')
+            setTimeout(() => {
+                changeColor(target, oldColor)
+            }, 2000)
             return true
         }
     }
@@ -83,6 +89,14 @@ async function zoomByNameProcessor(text) {
 
 }
 
+const POO_REGEXP = new RegExp("(poo)|(poop)|(shit)", "i")
 
-export const WORD_PROCESSORS = [dickOnSelectedItemProcessor]
+async function poopProcessor(text) {
+    if (POO_REGEXP.exec(text)) {
+        let poo = await board.createText({content: "<p style=\"font-size:100px;\">💩</p>", ...await getViewCenter(), width: 100})
+        console.log(poo)
+    }
+}
+
+export const WORD_PROCESSORS = [dickOnSelectedItemProcessor, poopProcessor]
 export const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor, zoomByNameProcessor]
