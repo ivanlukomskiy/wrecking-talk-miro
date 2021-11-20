@@ -1,5 +1,5 @@
 const {board} = window.miro;
-import {drawAbstraction, createShape, createImage} from "./commands.js"
+import {drawAbstraction, createShape, createImage, say} from "./commands.js"
 import {runSpeechRecognition} from "./recognition";
 import {getSelectedRect, findByName, getViewCenter, changeColor} from "./selectors";
 
@@ -39,7 +39,7 @@ function getNewPart(text) {
 
 async function dickOnSelectedItemProcessor(text) {
     let newPart = getNewPart(text)
-    if (newPart !== null){
+    if (newPart !== null) {
         if (newPart.toLowerCase().indexOf("dick") !== -1) {
             // getViewCenter().then((x, y) => {
             //     drawAbstraction(
@@ -47,7 +47,14 @@ async function dickOnSelectedItemProcessor(text) {
             //     )
             // })
             const rect = await getSelectedRect()
-            let {x, y, width, height} = rect
+            let x, y, width, height
+            if (rect !== null) {
+                ({x, y, width, height} = rect)
+            } else {
+                ({x, y} = await getViewCenter())
+                width = -50
+                height = 0
+            }
             await drawAbstraction(x + width + 50, y + height / 2)
             return true
         }
@@ -65,7 +72,7 @@ async function addDickToItemProcessor(text) {
         const item = findByName(name)
         console.log(item)
         if (item !== null) {
-            await drawAbstraction(item.x + item.width / 2+ 50, item.y)
+            await drawAbstraction(item.x + item.width / 2 + 50, item.y)
             return true
         }
     }
@@ -73,6 +80,7 @@ async function addDickToItemProcessor(text) {
 }
 
 const LIKE_REGEXP = new RegExp('like (.*)', 'i')
+
 async function likeBlockProcessor(text) {
     const match = LIKE_REGEXP.exec(text)
     if (match) {
@@ -91,14 +99,23 @@ async function likeBlockProcessor(text) {
     return false
 }
 
+const SAY_REGEXP = new RegExp('say (.*)', 'i')
+
+async function sayTextProcessor(text) {
+    const match = SAY_REGEXP.exec(text)
+    if (match) {
+        await say(match[1])
+    }
+}
+
 const WORD_PROCESSORS = [dickOnSelectedItemProcessor]
-const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor]
+const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor, sayTextProcessor]
 
 async function init() {
     await board.ui.on("icon:click", async () => {
         async function onAnythingSaidAsync(text) {
             for (let proc of WORD_PROCESSORS) {
-                if(await proc(text)) {
+                if (await proc(text)) {
                     return
                 }
             }
@@ -112,7 +129,7 @@ async function init() {
         async function onFinalisedAsync(text) {
             console.log("Finalized: ", text)
             for (let proc of PHRASES_PROCESSORS) {
-                if(await proc(text)) {
+                if (await proc(text)) {
                     return
                 }
             }
