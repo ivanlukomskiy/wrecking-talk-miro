@@ -1,4 +1,4 @@
-import {changeColor, findByName, getSelectedRect, getViewCenter} from "./selectors";
+import {changeColor, findByName, findByCoords, getSelectedRect, getViewCenter} from "./selectors";
 import {createImage, drawAbstraction, say, zoomByName, decorateByName} from "./commands";
 
 const {board} = miro;
@@ -57,28 +57,42 @@ async function addDickToItemProcessor(text) {
     return false
 }
 
-const LIKE_REGEXP = new RegExp('like (.*)', 'i')
+const LIKE_REGEXP = new RegExp('.*?like (.*)', 'i')
 
 async function likeBlockProcessor(text) {
     const match = LIKE_REGEXP.exec(text)
-    if (match) {
-        const targetName = match[1]
-        console.log('target name:', targetName)
-        const target = await findByName(targetName)
-        if (target) {
-            console.log('found target', target)
-            let {x, y, width, height} = target
-            await createImage('https://i.ibb.co/Qmgnsqr/like.png',
-                x + width / 2, y + height / 2, width / 5)
-            let oldColor = target.style.fillColor
-            await changeColor(target, '#F590F7')
-            setTimeout(() => {
-                changeColor(target, oldColor)
-            }, 2000)
-            return true
-        }
+    if (!match) {
+        return false
     }
-    return false
+
+    const targetName = match[1]
+    console.log('target name:', targetName)
+    const target = await findByName(targetName)
+    if (!target) {
+        return false
+    }
+
+    let isLike = true;
+    if (match[0].startsWith('dis')) {
+        isLike = false
+    }
+
+    console.log('found target', target)
+    let {x, y, width, height} = target
+    const adornmentX = x + width / 2;
+    const adornmentY = y + height / 2;
+    const adornment = await findByCoords(adornmentX, adornmentY)
+    if (adornment) {
+        await miro.board.remove(adornment)
+    }
+    await createImage(isLike ? 'https://i.ibb.co/Qmgnsqr/like.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Twemoji_1f4a9.svg/176px-Twemoji_1f4a9.svg.png',
+        adornmentX, adornmentY, width / 5)
+    let oldColor = target.style.fillColor
+    await changeColor(target, isLike ? '#F590F7' : '#CD9575')
+    setTimeout(() => {
+        changeColor(target, oldColor)
+    }, 2000)
+    return true
 }
 
 

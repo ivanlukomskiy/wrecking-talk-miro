@@ -16,6 +16,9 @@ export async function findByName(name) {
     }
     return item[0]
 }
+export async function findByCoords(x, y) {
+    return (await board.get()).find(item => Math.floor(item.x) === Math.floor(x) && Math.floor(item.y) === Math.floor(y));
+}
 export async function changeColor(item, color) {
     item.style.fillColor = color
     await item.sync()
