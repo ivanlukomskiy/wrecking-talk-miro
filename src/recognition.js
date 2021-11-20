@@ -1,3 +1,4 @@
+const {board} = window.miro;
 
 export function runSpeechRecognition(onAnythingSaid, onFinalised, onEndEvent) {
     var language = 'en-US';

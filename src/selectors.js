@@ -1,3 +1,5 @@
+const {board} = window.miro;
+
 export async function findByName(name) {
     let item = (await board.get()).filter(value => {
         console.log(value.content.toLowerCase().indexOf(name) !== -1, value)
