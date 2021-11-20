@@ -26,14 +26,14 @@ export async function createShape({shape_type, title = "", x = 0, y = 0, width =
     })
 }
 
-export async function createImage(url, x, y, width, rotation=0.0) {
+export async function createImage(url, x, y, width, rotation=0.0, title = 'This is an image') {
     const params = {
-        title: 'This is an image',
+        title,
         url,
         x,
         y,
         width,
-        rotation: rotation
+        rotation
     }
     console.log('params', params)
     return await miro.board.createImage(params)
@@ -195,25 +195,7 @@ export async function addCat() {
     const w = 166;
     const h = 132;
 
-    await createImage(CAT_URLS[0], x, y, w, 0)
-    await board.createShape(createShape({
-        shape_type: "rectangle",
-        title: "",
-        x,
-        y,
-        color: "#FFFFFF",
-        width: w,
-        height: h,
-    }))
-    await createImage(CAT_URLS[1], x, y, w, 0)
-    await board.createShape(createShape({
-        shape_type: "rectangle",
-        title: "",
-        x,
-        y,
-        color: "#FFFFFF",
-        width: w,
-        height: h,
-    }))
-    await createImage(CAT_URLS[2], x, y, w, 0)
+    await createImage(CAT_URLS[0], x, y, w, 0, 'cat0')
+    await createImage(CAT_URLS[1], x, y, w, 0, 'cat1')
+    await createImage(CAT_URLS[2], x, y, w, 0, 'cat2')
 }
