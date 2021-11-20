@@ -50,7 +50,7 @@ let rickRollProcessor = regexpProcessor(async (text) => {
 
 async function dickOnSelectedItemProcessor(text) {
     if (text !== null) {
-        if (text.toLowerCase().indexOf("dick") !== -1) {
+        if (text.toLowerCase().startsWith("dick")) {
             const rect = await getSelectedRect()
             let x, y, width, height
             if (rect !== null) {
@@ -457,12 +457,11 @@ let fireProcessor = regexpProcessor(async (text) => {
 let workspaceProcessor = regexpProcessor(getInView, new RegExp("workspace", "i"))
 
 export const WORD_PROCESSORS = [
-    dickOnSelectedItemProcessor,
     poopProcessor
 ]
 
 export const PHRASES_PROCESSORS = [
-    addDickToItemProcessor,
+    dickOnSelectedItemProcessor,
     likeBlockProcessor,
     sayTextProcessor,
     zoomByNameProcessor,
