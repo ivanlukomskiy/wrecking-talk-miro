@@ -46,8 +46,8 @@ async function likeBlockProcessor(text) {
         if (target) {
             console.log('found target', target)
             let {x, y, width, height} = target
-            await createImage('https://i.ibb.co/GPC8SQB/like.png',
-                x + width / 2, y + height / 2, width / 7)
+            await createImage('https://i.ibb.co/Qmgnsqr/like.png',
+                x + width / 2, y + height / 2, width / 5)
             await changeColor(target, '#F590F7')
             return true
         }
