@@ -72,8 +72,19 @@ async function addDickToItemProcessor(text) {
     return false
 }
 
+const LIKE_REGEXP = new RegExp('like (.*)', 'i')
+async function likeBlockProcessor(text) {
+    const match = LIKE_REGEXP.exec(text)
+    if (match) {
+        const target = match[1]
+        console.log('target', target)
+        return true
+    }
+    return false
+}
+
 const WORD_PROCESSORS = [dickOnSelectedItemProcessor]
-const PHRASES_PROCESSORS = [addDickToItemProcessor]
+const PHRASES_PROCESSORS = [addDickToItemProcessor, likeBlockProcessor]
 
 async function init() {
     await board.ui.on("icon:click", async () => {
@@ -101,7 +112,7 @@ async function init() {
 
         function onFinalised(text) {
             console.log("Finalized: ", text)
-            onAnythingSaidAsync(text)
+            onFinalisedAsync(text)
         }
 
         async function onEndEvent() {
