@@ -269,3 +269,8 @@ export async function removeColor(color) {
     const items = (await board.get()).filter(item => item.style && item.style.fillColor === convert(color));
     await removeAll(items);
 }
+
+export async function removeByName(name) {
+    const items = (await board.get()).filter(item => item.content && item.content === name);
+    await removeAll(items);
+}
