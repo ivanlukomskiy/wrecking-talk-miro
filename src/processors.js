@@ -11,7 +11,7 @@ import {
     removeDecorations,
     removeColor,
     createShape,
-    removeByName,
+    removeByName, createText,
 } from "./commands";
 import {convert} from './colorsMap';
 
@@ -81,8 +81,7 @@ async function likeBlockProcessor(text) {
     if (adornment) {
         await miro.board.remove(adornment)
     }
-    await createImage(isLike ? 'https://i.ibb.co/Qmgnsqr/like.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Twemoji_1f4a9.svg/176px-Twemoji_1f4a9.svg.png',
-        adornmentX, adornmentY, width / 5)
+    await createText('<p>❤️</p>', adornmentX, adornmentY, 0)
     let oldColor = target.style.fillColor
     await changeColor(target, isLike ? '#F590F7' : '#CD9575')
     setTimeout(() => {
