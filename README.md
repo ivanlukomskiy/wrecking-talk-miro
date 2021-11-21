@@ -1,46 +1,40 @@
-# Miro starter app
+# We never decided on the name of the voice assistant
 
-## How to start
+### Installation and Running
 
-> ### Note:
->
-> When you run `npm start` for the first time, you get a one-off prompt for your `sudo ` password.
-> This is required to generate a locally-trusted development certificate with [`mkcert`](https://github.com/FiloSottile/mkcert).
-> The certificate enables running `localhost` over HTTPS. HTTP isn't supported.
-> The generated certificate is in the `~/.vite-plugin-mkcert` folder.
+Currently the voice kit only works on Google Chrome.
 
-- Run `yarn` or `npm install` to install dependencies.
-- Run `yarn start` or `npm start` to start developing. \
-  Your URL should be similar to this example:
+1. You need to clone the repository to your local machine and change directory to the repository folder
 
-```
-https://localhost:3000
-```
+2. Then run npm -install to download the necessary dependencies
 
-- Paste this URL in the `App URL` box in your Miro app settings.
-- Open a board and click the three dots (...) or the chevron (>>) on the left
-  toolbar. You should see the Miro starter app.
+3. Then run npm start  – you now have a local copy of the app running on port 3000
 
-## How to build the app
+4. Open Miro in Chrome and install the app in your dev space
 
-- Run `yarn run build` or `npm run build`. \
-  This generates a static output inside `dist/`, which you can host on a static hosting service.
+5. Open a Miro board and turn on the voice assistant in the apps tab of the menu
 
-## Folder structure
+### Available Commands
 
-```
-.
-├── src
-│  ├── assets
-│  │  ├── icon.svg <-- The app icon.
-│  │  └── style.css
-│  ├── app.js <-- The code for the app lives here.
-│  └── index.js <-- The code for the entry point lives here.
-├── app.html <-- The app itself. This is loaded inside the appContainer on the board.
-└── index.html <-- The app entry point. This is what you add to the App URL box in the Miro app settings.
-```
+We have created some fun commands for you to shout at your Miro board:
 
-### About the app
+- <create %object_name%>: creates a block with your specified name on your screen
+- <find %object_name%>: moves the screen to be centered around specified object
+- <delete %object_name%>: removes an object with specified name
+- <annotate %new_object_name%>: changes text in selected blocks to specified phrase
+- <say %message%>: displays your voice message via speech bubble on your Miro board.
+- <align> : aligns selected objects and spaces them out evenly
+- <link>: creates arrows between selected objects, pointing from
+- <paint %object_name% %color_name%>: changes the color of specified object to specified color
+- <remove color %color_name%>: removes all objects of specified color from board
+- <like/dislike %object_name%>: adds a like/dislike symbol to an object you specify
+- <show everything>: zooms out the board so that all elements of board are shown on screen
+- <destroy everything>: deletes every single object on the board
 
-This app uses [Vite](https://vitejs.dev/).
-If you want to modify the `vite.config.js` configuration, see the [Vite documentation](https://vitejs.dev/guide/).
+Miscellaneous commands that you probably won't use, but we like them nonetheless:
+- <decorate %object_name%>: highlights specified object with a frame of pretty flowers
+- <remove decorations>: removes all the pretty flowers from board
+- <spawn cat>: inserts a janky animation of a walking cat
+- <remove cat>: removes all janky animations of walking cats
+
+There are also some undocumented commands which we encourage you to discover on your own :)
